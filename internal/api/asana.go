@@ -54,3 +54,49 @@ func (a *AsanaClient) GetTasks() ([]*asana.Task, error) {
 
 	return tasks, nil
 }
+
+func (a *AsanaClient) CreateTask(taskName string) error {
+	var taskCreateRequest = &asana.CreateTaskRequest{
+		TaskBase: asana.TaskBase{Name: taskName},
+		Projects: []string{a.project},
+	}
+
+	_, err := a.c.CreateTask(taskCreateRequest)
+	return err
+}
+
+func (a *AsanaClient) MarkAsDone(taskName string) error {
+	// fixme: think about marking as done via ID, fetching all tasks it's too much
+	task, err := a.getTaskByName(taskName)
+	if err != nil {
+		return err
+	}
+
+	taskUpdateRequest := &asana.UpdateTaskRequest{
+		TaskBase: asana.TaskBase{
+			Name:      task.Name,
+			Completed: ptr(true),
+		},
+	}
+
+	return task.Update(a.c, taskUpdateRequest)
+}
+
+func (a *AsanaClient) getTaskByName(taskName string) (*asana.Task, error) {
+	tasks, err := a.GetTasks()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, task := range tasks {
+		if task.Name == taskName {
+			return task, nil
+		}
+	}
+
+	return nil, err
+}
+
+func ptr[T any](v T) *T {
+	return &v
+}

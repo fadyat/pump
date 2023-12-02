@@ -24,13 +24,11 @@ func (a *Asana) Get(filters ...func(task *model.Task) bool) ([]*model.Task, erro
 }
 
 func (a *Asana) Create(taskName string) error {
-	//TODO implement me
-	panic("implement me")
+	return a.c.CreateTask(taskName)
 }
 
 func (a *Asana) MarkAsDone(taskName string) error {
-	//TODO implement me
-	panic("implement me")
+	return a.c.MarkAsDone(taskName)
 }
 
 func NewAsana(c *api.AsanaClient) Storage {
