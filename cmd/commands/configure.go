@@ -10,6 +10,10 @@ import (
 	"strings"
 )
 
+func getDir(path string) string {
+	return path[:strings.LastIndex(path, "/")]
+}
+
 func Configure(
 	configPath string,
 ) *cobra.Command {
@@ -35,7 +39,7 @@ func Configure(
 				opts, err = asanaOpts(reader)
 			case "2", "fs":
 				choice = "fs"
-				opts, err = fsOpts(reader)
+				opts, err = fsOpts(getDir(configPath), reader)
 			default:
 				return fmt.Errorf("invalid choice")
 			}
@@ -83,13 +87,20 @@ func asanaOpts(
 }
 
 func fsOpts(
+	configDir string,
 	reader *bufio.Reader,
 ) (map[string]any, error) {
-	fmt.Println("Enter the path to the tasks file:")
-	path, err := readInput(reader)
+	path := fmt.Sprintf("%s/tasks.json", configDir)
+	fmt.Printf("Enter the path to the tasks file: (default: %s)\n", path)
+	input, err := readInput(reader)
 	if err != nil {
 		return nil, err
 	}
 
+	if input != "" {
+		path = input
+	}
+
+	fmt.Printf("Tasks file will be created at %s\n", path)
 	return map[string]any{"file": path}, nil
 }

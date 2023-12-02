@@ -8,13 +8,13 @@ import (
 )
 
 var (
-	devConfigPath  string = "./.pump/config.json"
-	prodConfigPath string = "~/.config/pump/config.json"
+	// ConfigPath will be changed when building for production environment
+	//  to ~/.config/pump/config.json
+	ConfigPath string = "./.pump/config.json"
 )
 
 func main() {
-	// todo: move to another file, because config command can't run
-	config, err := internal.NewConfig(devConfigPath)
+	config, err := internal.NewConfig(ConfigPath)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -24,7 +24,7 @@ func main() {
 		Short: "Pump is a CLI application for choosing tasks to work on",
 	}
 
-	pump.AddCommand(commands.Configure(devConfigPath))
+	pump.AddCommand(commands.Configure(ConfigPath))
 	pump.AddCommand(commands.GetAvailableTask(config))
 	pump.AddCommand(commands.AddTask(config))
 	pump.AddCommand(commands.MarkTaskAsDone(config))

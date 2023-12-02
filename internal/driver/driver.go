@@ -31,5 +31,5 @@ func New(
 		return NewFs(storageOpts["file"].(string)), nil
 	}
 
-	return nil, errors.New("unknown driver type")
+	return nil, errors.New("requested driver not found, run `pump configure`")
 }
