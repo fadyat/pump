@@ -2,8 +2,8 @@ package internal
 
 import (
 	"errors"
-	"slices"
-	"time"
+	"github.com/fadyat/pump/internal/driver"
+	"github.com/fadyat/pump/internal/model"
 )
 
 var (
@@ -12,89 +12,29 @@ var (
 )
 
 type Service interface {
-	Get(filters ...func(task *Task) bool) ([]*Task, error)
+	Get(filters ...func(task *model.Task) bool) ([]*model.Task, error)
 	Create(taskName string) error
 	MarkAsDone(taskName string) error
 }
 
 type svc struct {
-	tasksFile string
+	storage driver.Storage
 }
 
-func NewSvc(
-	tasksFile string,
-) Service {
-	return &svc{tasksFile: tasksFile}
+func NewSvc(storage driver.Storage) Service {
+	return &svc{storage: storage}
 }
 
 func (r *svc) Get(
-	filters ...func(task *Task) bool,
-) ([]*Task, error) {
-	var tasks []*Task
-	if err := readJson(r.tasksFile, &tasks); err != nil {
-		return nil, err
-	}
-
-	var filteredTasks []*Task = make([]*Task, 0)
-	for _, filter := range filters {
-		for _, task := range tasks {
-			if filter(task) {
-				filteredTasks = append(filteredTasks, task)
-			}
-		}
-
-		tasks = filteredTasks
-	}
-
-	return tasks, nil
+	filters ...func(task *model.Task) bool,
+) ([]*model.Task, error) {
+	return r.storage.Get(filters...)
 }
 
 func (r *svc) Create(taskName string) (err error) {
-	var tasks []*Task
-	if tasks, err = r.Get(); err != nil {
-		return err
-	}
-
-	if slices.IndexFunc(tasks, func(task *Task) bool {
-		return task.Name == taskName
-	}) != -1 {
-		return ErrTaskAlreadyExists
-	}
-
-	tasks = append(tasks, &Task{
-		Name:      taskName,
-		CreatedAt: time.Now(),
-	})
-
-	return writeJson(r.tasksFile, tasks)
+	return r.storage.Create(taskName)
 }
 
 func (r *svc) MarkAsDone(taskName string) (err error) {
-	var tasks []*Task
-	if tasks, err = r.Get(); err != nil {
-		return err
-	}
-
-	var task *Task
-	if task, err = r.findTaskByName(tasks, taskName); err != nil {
-		return err
-	}
-
-	task.Done = true
-	return writeJson(r.tasksFile, tasks)
-}
-
-func (r *svc) findTaskByName(
-	tasks []*Task,
-	taskName string,
-) (*Task, error) {
-	var idx = slices.IndexFunc(tasks, func(task *Task) bool {
-		return task.Name == taskName
-	})
-
-	if idx == -1 {
-		return nil, ErrTaskNotFound
-	}
-
-	return tasks[idx], nil
+	return r.storage.MarkAsDone(taskName)
 }

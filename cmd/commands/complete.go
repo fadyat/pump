@@ -3,6 +3,7 @@ package commands
 import (
 	"fmt"
 	"github.com/fadyat/pump/internal"
+	"github.com/fadyat/pump/internal/driver"
 	"github.com/spf13/cobra"
 )
 
@@ -24,7 +25,7 @@ func MarkTaskAsDone(
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			var svc = internal.NewSvc(config.TasksFile)
+			var svc = internal.NewSvc(driver.NewFs(config.TasksFile))
 			if err := svc.MarkAsDone(taskName); err != nil {
 				return err
 			}

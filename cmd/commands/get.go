@@ -3,6 +3,8 @@ package commands
 import (
 	"fmt"
 	"github.com/fadyat/pump/internal"
+	"github.com/fadyat/pump/internal/driver"
+	"github.com/fadyat/pump/internal/model"
 	"github.com/spf13/cobra"
 )
 
@@ -14,14 +16,14 @@ func GetAvailableTask(
 		Short: "Get all available tasks",
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			var (
-				svc     = internal.NewSvc(config.TasksFile)
+				svc     = internal.NewSvc(driver.NewFs(config.TasksFile))
 				printer = internal.NewTablePrinter("name", "created at")
 			)
 
 			var (
-				tasks   []*internal.Task
-				filters = []func(task *internal.Task) bool{
-					func(task *internal.Task) bool { return !task.Done },
+				tasks   []*model.Task
+				filters = []func(task *model.Task) bool{
+					func(task *model.Task) bool { return !task.Done },
 				}
 			)
 			if tasks, err = svc.Get(filters...); err != nil {
