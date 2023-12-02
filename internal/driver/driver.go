@@ -25,7 +25,7 @@ func New(
 	case "asana":
 		return NewAsana(api.NewAsanaClient(
 			storageOpts["token"].(string),
-			api.WithProject("1206016231448335"),
+			storageOpts["project"].(string),
 		)), nil
 	case "fs":
 		return NewFs(storageOpts["file"].(string)), nil

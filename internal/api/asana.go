@@ -9,26 +9,14 @@ type AsanaClient struct {
 	workspace, project string
 }
 
-type Option func(*AsanaClient)
-
-func WithProject(project string) Option {
-	return func(c *AsanaClient) { c.project = project }
-}
-
 func NewAsanaClient(
 	accessToken string,
-	opts ...Option,
+	project string,
 ) *AsanaClient {
-	c := &AsanaClient{
+	return &AsanaClient{
 		c:       asana.NewClientWithAccessToken(accessToken),
-		project: "personal",
+		project: project,
 	}
-
-	for _, opt := range opts {
-		opt(c)
-	}
-
-	return c
 }
 
 func (a *AsanaClient) GetTasks() ([]*asana.Task, error) {

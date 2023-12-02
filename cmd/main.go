@@ -9,7 +9,7 @@ import (
 
 var (
 	devConfigPath  string = "./.pump/config.json"
-	prodConfigPath string = "~/.config/pump/config.yaml"
+	prodConfigPath string = "~/.config/pump/config.json"
 )
 
 func main() {

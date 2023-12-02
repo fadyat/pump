@@ -70,7 +70,16 @@ func asanaOpts(
 		return nil, err
 	}
 
-	return map[string]any{"token": token}, nil
+	fmt.Println("Enter the project ID: (can be found in the URL)")
+	project, err := readInput(reader)
+	if err != nil {
+		return nil, err
+	}
+
+	return map[string]any{
+		"token":   token,
+		"project": project,
+	}, nil
 }
 
 func fsOpts(
