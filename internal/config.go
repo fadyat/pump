@@ -1,22 +1,21 @@
 package internal
 
+import "github.com/fadyat/pump/pkg"
+
 type Config struct {
-	Driver string
+	Driver     string         `json:"driver"`
+	DriverOpts map[string]any `json:"driver_opts"`
 }
 
-func NewConfig() *Config {
-	return &Config{
-		Driver: "asana",
+func NewConfig(configPath string) (*Config, error) {
+	var config Config
+	if err := pkg.ReadJson(configPath, &config); err != nil {
+		return nil, err
 	}
+
+	return &config, nil
 }
 
 func (c *Config) GetDriverOpts() map[string]any {
-	switch c.Driver {
-	case "asana":
-		return map[string]any{"token": "token"}
-	case "fs":
-		return map[string]any{"file": ".pump/tasks.json"}
-	}
-
-	return map[string]any{}
+	return c.DriverOpts
 }
