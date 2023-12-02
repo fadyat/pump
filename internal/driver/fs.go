@@ -52,7 +52,7 @@ func (f *FileStorage) Create(taskName string) (err error) {
 
 	tasks = append(tasks, &model.Task{
 		Name:      taskName,
-		CreatedAt: time.Now(),
+		CreatedAt: ptr(time.Now()),
 	})
 
 	return writeJson(f.file, tasks)
@@ -127,4 +127,8 @@ func writeJson(path string, v interface{}) error {
 	}
 
 	return os.WriteFile(path, data, 0644)
+}
+
+func ptr[T any](v T) *T {
+	return &v
 }
