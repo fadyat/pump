@@ -25,7 +25,7 @@ func ReadJson(path string, v interface{}) error {
 }
 
 func readFileBytes(path string) ([]byte, error) {
-	b, err := os.ReadFile(path)
+	b, err := os.ReadFile(filepath.Clean(path))
 
 	switch {
 	case err == nil:
@@ -44,9 +44,9 @@ func WriteJson(path string, v interface{}) error {
 	}
 
 	var dir = filepath.Dir(path)
-	if err := os.MkdirAll(dir, 0755); err != nil {
+	if err := os.MkdirAll(dir, 0o750); err != nil {
 		return err
 	}
 
-	return os.WriteFile(path, data, 0644)
+	return os.WriteFile(path, data, 0o600)
 }

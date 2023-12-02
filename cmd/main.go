@@ -30,5 +30,5 @@ func main() {
 	pump.AddCommand(commands.MarkTaskAsDone(config))
 	pump.AddCommand(commands.SelectTask(config))
 
-	pump.Execute()
+	_ = pump.Execute()
 }

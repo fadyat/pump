@@ -20,12 +20,12 @@ func SelectTask(
 		Use:   "select",
 		Short: "Select a task to work on",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			driver, err := driver.New(config.Driver, config.GetDriverOpts())
+			driv, err := driver.New(config.Driver, config.GetDriverOpts())
 			if err != nil {
 				return err
 			}
 
-			svc := internal.NewSvc(driver)
+			svc := internal.NewSvc(driv)
 			task, err := svc.SelectGoal(activeTasksFilter)
 			if err != nil {
 				return err

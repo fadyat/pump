@@ -24,13 +24,13 @@ func AddTask(
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			driver, err := driver.New(config.Driver, config.GetDriverOpts())
+			driv, err := driver.New(config.Driver, config.GetDriverOpts())
 			if err != nil {
 				return err
 			}
 
-			svc := internal.NewSvc(driver)
-			if err = svc.Create(taskName); err != nil {
+			svc := internal.NewSvc(driv)
+			if err := svc.Create(taskName); err != nil {
 				return err
 			}
 

@@ -25,13 +25,13 @@ func MarkTaskAsDone(
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			driver, err := driver.New(config.Driver, config.GetDriverOpts())
+			driv, err := driver.New(config.Driver, config.GetDriverOpts())
 			if err != nil {
 				return err
 			}
 
-			var svc = internal.NewSvc(driver)
-			if err = svc.MarkAsDone(taskName); err != nil {
+			var svc = internal.NewSvc(driv)
+			if err := svc.MarkAsDone(taskName); err != nil {
 				return err
 			}
 

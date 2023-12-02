@@ -15,13 +15,13 @@ func GetAvailableTask(
 		Use:   "get",
 		Short: "Get all available tasks",
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			driver, err := driver.New(config.Driver, config.GetDriverOpts())
+			driv, err := driver.New(config.Driver, config.GetDriverOpts())
 			if err != nil {
 				return err
 			}
 
 			var (
-				svc     = internal.NewSvc(driver)
+				svc     = internal.NewSvc(driv)
 				printer = internal.NewTablePrinter("name", "created at")
 				tasks   []*model.Task
 			)

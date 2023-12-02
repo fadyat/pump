@@ -5,8 +5,8 @@ import (
 )
 
 type AsanaClient struct {
-	c                  *asana.Client
-	workspace, project string
+	c       *asana.Client
+	project string
 }
 
 func NewAsanaClient(
