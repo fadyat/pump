@@ -28,6 +28,7 @@ func main() {
 	pump.AddCommand(commands.GetAvailableTask(config))
 	pump.AddCommand(commands.AddTask(config))
 	pump.AddCommand(commands.MarkTaskAsDone(config))
+	pump.AddCommand(commands.SelectTask(config))
 
 	pump.Execute()
 }

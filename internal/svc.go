@@ -1,9 +1,11 @@
 package internal
 
 import (
+	"crypto/rand"
 	"errors"
 	"github.com/fadyat/pump/internal/driver"
 	"github.com/fadyat/pump/internal/model"
+	"math/big"
 )
 
 var (
@@ -15,6 +17,7 @@ type Service interface {
 	Get(filters ...func(task *model.Task) bool) ([]*model.Task, error)
 	Create(taskName string) error
 	MarkAsDone(taskName string) error
+	SelectGoal(filters ...func(task *model.Task) bool) (*model.Task, error)
 }
 
 type svc struct {
@@ -31,10 +34,34 @@ func (r *svc) Get(
 	return r.storage.Get(filters...)
 }
 
-func (r *svc) Create(taskName string) (err error) {
+func (r *svc) Create(taskName string) error {
 	return r.storage.Create(taskName)
 }
 
-func (r *svc) MarkAsDone(taskName string) (err error) {
+func (r *svc) MarkAsDone(taskName string) error {
 	return r.storage.MarkAsDone(taskName)
+}
+
+func (r *svc) SelectGoal(
+	filters ...func(task *model.Task) bool,
+) (*model.Task, error) {
+	tasks, err := r.storage.Get(filters...)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(tasks) == 0 {
+		return nil, ErrTaskNotFound
+	}
+
+	return takeRandomTask(tasks)
+}
+
+func takeRandomTask(tasks []*model.Task) (*model.Task, error) {
+	bigInt, err := rand.Int(rand.Reader, big.NewInt(int64(len(tasks))))
+	if err != nil {
+		return nil, err
+	}
+
+	return tasks[bigInt.Int64()], nil
 }

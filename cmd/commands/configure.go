@@ -53,6 +53,7 @@ func Configure(
 				DriverOpts: opts,
 			})
 		},
+		SilenceUsage: true,
 	}
 }
 

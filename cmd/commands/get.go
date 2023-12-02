@@ -24,12 +24,9 @@ func GetAvailableTask(
 				svc     = internal.NewSvc(driver)
 				printer = internal.NewTablePrinter("name", "created at")
 				tasks   []*model.Task
-				filters = []func(task *model.Task) bool{
-					func(task *model.Task) bool { return !task.Done },
-				}
 			)
 
-			if tasks, err = svc.Get(filters...); err != nil {
+			if tasks, err = svc.Get(activeTasksFilter); err != nil {
 				return err
 			}
 
