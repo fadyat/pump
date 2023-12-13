@@ -24,6 +24,7 @@ func main() {
 		Short: "Pump is a CLI application for choosing tasks to work on",
 	}
 
+	pump.AddCommand(commands.ConfigureV2())
 	pump.AddCommand(commands.Configure(ConfigPath))
 	pump.AddCommand(commands.GetAvailableTask(config))
 	pump.AddCommand(commands.AddTask(config))
