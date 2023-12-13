@@ -47,6 +47,8 @@ func newAsanaDriverForm(opts, storedOpts *options.AsanaDriver) *huh.Form {
 
 					return nil
 				}),
+		),
+		huh.NewGroup(
 			huh.NewInput().
 				Title("Enter Asana Project ID:").
 				Prompt(defaultPrompt).
@@ -63,6 +65,24 @@ func newAsanaDriverForm(opts, storedOpts *options.AsanaDriver) *huh.Form {
 	)
 }
 
+func newFileSystemDriverForm(opts, storedOpts *options.FileSystemDriver) *huh.Form {
+	var (
+
+		// todo: fix this to dir(configPath)/tasks.json
+		tasksPathPlaceholder = "./.pump/tasks.json"
+	)
+
+	// todo: add form
+	return huh.NewForm(
+		huh.NewGroup(
+			huh.NewInput().
+				Title("Enter the path to the tasks file:").
+				Prompt(defaultPrompt).
+				Placeholder(tasksPathPlaceholder),
+		),
+	)
+}
+
 func newDriverSelectForm(driver *string) *huh.Form {
 	return huh.NewForm(
 		huh.NewGroup(
@@ -70,14 +90,51 @@ func newDriverSelectForm(driver *string) *huh.Form {
 				Title("Select driver").
 				Options(
 					huh.NewOption("Asana", "asana").Selected(true),
-					huh.NewOption("File system", "local"),
+					huh.NewOption("File system", "fs"),
 				).
 				Value(driver),
 		),
 	)
 }
 
-func ConfigureV2(config *internal.Config, configPath string) *cobra.Command {
+func selectAsanaDriverOptions(config *internal.Config) (map[string]any, error) {
+	var (
+		storedOpts = options.AsanaDriverFromMap(config.DriverOpts)
+		opts       = &options.AsanaDriver{}
+	)
+
+	if err := newAsanaDriverForm(opts, storedOpts).Run(); err != nil {
+		return nil, err
+	}
+
+	return opts.Merge(storedOpts).ToMap(), nil
+}
+
+func selectFileSystemDriverOptions(config *internal.Config) (map[string]any, error) {
+	var (
+		storedOpts = options.FileSystemDriverFromMap(config.DriverOpts)
+		opts       = &options.FileSystemDriver{}
+	)
+
+	if err := newFileSystemDriverForm(opts, storedOpts).Run(); err != nil {
+		return nil, err
+	}
+
+	return opts.Merge(storedOpts).ToMap(), nil
+}
+
+func runDriverOptionsSelection(config *internal.Config, driver string) (map[string]any, error) {
+	switch driver {
+	case "asana":
+		return selectAsanaDriverOptions(config)
+	case "fs":
+		return selectFileSystemDriverOptions(config)
+	}
+
+	return nil, errors.New("unsupported driver")
+}
+
+func ConfigureV2(config *internal.Config) *cobra.Command {
 	return &cobra.Command{
 		Use:   "configure-v2",
 		Short: "Configure pump via tui",
@@ -88,26 +145,14 @@ func ConfigureV2(config *internal.Config, configPath string) *cobra.Command {
 				return err
 			}
 
-			var (
-				driverForm *huh.Form
-				storedOpts = options.AsanaDriverFromMap(config.DriverOpts)
-				opts       = &options.AsanaDriver{}
-			)
-
-			switch driver {
-			case "asana":
-				driverForm = newAsanaDriverForm(opts, storedOpts)
-			default:
-				panic(":*")
-			}
-
-			if err := driverForm.Run(); err != nil {
+			driverOptions, err := runDriverOptionsSelection(config, driver)
+			if err != nil {
 				return err
 			}
 
-			return pkg.WriteJson(configPath, internal.Config{
+			return pkg.WriteJson(config.ConfigPath, internal.Config{
 				Driver:     driver,
-				DriverOpts: opts.Merge(storedOpts).ToMap(),
+				DriverOpts: driverOptions,
 			})
 		},
 		SilenceUsage: true,
