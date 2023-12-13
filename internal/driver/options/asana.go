@@ -5,13 +5,17 @@ type AsanaDriver struct {
 	ProjectID   string
 }
 
-func (a *AsanaDriver) Merge(b *AsanaDriver) {
-	if a.AccessToken == "" {
-		a.AccessToken = b.AccessToken
+func AsanaDriverFromMap(m map[string]any) *AsanaDriver {
+	return &AsanaDriver{
+		AccessToken: getOrEmpty(m, "token"),
+		ProjectID:   getOrEmpty(m, "project"),
 	}
+}
 
-	if a.ProjectID == "" {
-		a.ProjectID = b.ProjectID
+func (a *AsanaDriver) Merge(b *AsanaDriver) *AsanaDriver {
+	return &AsanaDriver{
+		AccessToken: replaceOnEmpty(a.AccessToken, b.AccessToken),
+		ProjectID:   replaceOnEmpty(a.ProjectID, b.ProjectID),
 	}
 }
 
@@ -20,4 +24,21 @@ func (a *AsanaDriver) ToMap() map[string]any {
 		"token":   a.AccessToken,
 		"project": a.ProjectID,
 	}
+}
+
+func replaceOnEmpty(val, repl string) string {
+	if val == "" {
+		return repl
+	}
+
+	return val
+}
+
+func getOrEmpty(m map[string]any, key string) string {
+	val, ok := m[key].(string)
+	if !ok {
+		return ""
+	}
+
+	return val
 }
