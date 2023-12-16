@@ -5,6 +5,7 @@ import (
 	"github.com/fadyat/pump/internal"
 	"github.com/fadyat/pump/internal/driver"
 	"github.com/spf13/cobra"
+	"strings"
 )
 
 func MarkTaskAsDone(
@@ -21,7 +22,7 @@ func MarkTaskAsDone(
 				return fmt.Errorf("task name is required")
 			}
 
-			taskName = args[0]
+			taskName = strings.TrimSpace(args[0])
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
