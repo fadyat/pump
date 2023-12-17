@@ -4,3 +4,5 @@ tasks.json
 .DS_Store
 main
 .env
+dist/
+.bin
