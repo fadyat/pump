@@ -6,18 +6,18 @@ import (
 	"github.com/fadyat/pump/internal/driver"
 	"github.com/fadyat/pump/internal/model"
 	"math/big"
+	"time"
 )
 
 var (
-	ErrTaskAlreadyExists = errors.New("task already exists")
-	ErrTaskNotFound      = errors.New("task not found")
+	ErrTaskNotFound = errors.New("task not found")
 )
 
 type Service interface {
-	Get(filters ...func(task *model.Task) bool) ([]*model.Task, error)
+	Get() ([]*model.Task, error)
 	Create(taskName string) error
 	MarkAsDone(taskName string) error
-	SelectGoal(filters ...func(task *model.Task) bool) (*model.Task, error)
+	SelectGoal(dueAt *time.Time) (*model.Task, error)
 }
 
 type svc struct {
@@ -28,10 +28,8 @@ func NewSvc(storage driver.Storage) Service {
 	return &svc{storage: storage}
 }
 
-func (r *svc) Get(
-	filters ...func(task *model.Task) bool,
-) ([]*model.Task, error) {
-	return r.storage.Get(filters...)
+func (r *svc) Get() ([]*model.Task, error) {
+	return r.storage.Get()
 }
 
 func (r *svc) Create(taskName string) error {
@@ -42,10 +40,8 @@ func (r *svc) MarkAsDone(taskName string) error {
 	return r.storage.MarkAsDone(taskName)
 }
 
-func (r *svc) SelectGoal(
-	filters ...func(task *model.Task) bool,
-) (*model.Task, error) {
-	tasks, err := r.storage.Get(filters...)
+func (r *svc) SelectGoal(dueAt *time.Time) (*model.Task, error) {
+	tasks, err := r.storage.Get()
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +50,16 @@ func (r *svc) SelectGoal(
 		return nil, ErrTaskNotFound
 	}
 
-	return takeRandomTask(tasks)
+	selectedTask, err := takeRandomTask(tasks)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = r.storage.SetDueDate(selectedTask.Name, dueAt); err != nil {
+		return nil, err
+	}
+
+	return selectedTask, nil
 }
 
 func takeRandomTask(tasks []*model.Task) (*model.Task, error) {

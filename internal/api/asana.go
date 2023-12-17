@@ -3,6 +3,8 @@ package api
 import (
 	"bitbucket.org/mikehouston/asana-go"
 	"errors"
+	"github.com/fadyat/pump/pkg"
+	"time"
 )
 
 type AsanaClient struct {
@@ -30,6 +32,7 @@ func (a *AsanaClient) GetTasks() ([]*asana.Task, error) {
 			Limit: 100,
 			Fields: []string{
 				"created_at",
+				"due_at",
 				"completed",
 				"name",
 			},
@@ -64,7 +67,23 @@ func (a *AsanaClient) MarkAsDone(taskName string) error {
 	taskUpdateRequest := &asana.UpdateTaskRequest{
 		TaskBase: asana.TaskBase{
 			Name:      task.Name,
-			Completed: ptr(true),
+			Completed: pkg.Ptr(true),
+		},
+	}
+
+	return task.Update(a.c, taskUpdateRequest)
+}
+
+func (a *AsanaClient) SetDueDate(taskName string, dueAt *time.Time) error {
+	task, err := a.getTaskByName(taskName)
+	if err != nil {
+		return err
+	}
+
+	taskUpdateRequest := &asana.UpdateTaskRequest{
+		TaskBase: asana.TaskBase{
+			Name:  task.Name,
+			DueAt: dueAt,
 		},
 	}
 
@@ -84,8 +103,4 @@ func (a *AsanaClient) getTaskByName(taskName string) (*asana.Task, error) {
 	}
 
 	return nil, errors.New("task not found")
-}
-
-func ptr[T any](v T) *T {
-	return &v
 }

@@ -16,7 +16,7 @@ func MarkTaskAsDone(
 	return &cobra.Command{
 		Use:     "done [name]",
 		Short:   "Mark a task as done",
-		Aliases: []string{"do", "ok", "complete", "finish"},
+		Aliases: []string{"ok", "complete", "finish"},
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) == 0 {
 				return fmt.Errorf("task name is required")

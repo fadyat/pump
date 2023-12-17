@@ -11,21 +11,10 @@ type FileStorage struct {
 	file string
 }
 
-func (f *FileStorage) Get(filters ...func(task *model.Task) bool) ([]*model.Task, error) {
+func (f *FileStorage) Get() ([]*model.Task, error) {
 	var tasks []*model.Task
 	if err := pkg.ReadJson(f.file, &tasks); err != nil {
 		return nil, err
-	}
-
-	var filteredTasks = make([]*model.Task, 0)
-	for _, filter := range filters {
-		for _, task := range tasks {
-			if filter(task) {
-				filteredTasks = append(filteredTasks, task)
-			}
-		}
-
-		tasks = filteredTasks
 	}
 
 	return tasks, nil
@@ -45,7 +34,7 @@ func (f *FileStorage) Create(taskName string) (err error) {
 
 	tasks = append(tasks, &model.Task{
 		Name:      taskName,
-		CreatedAt: ptr(time.Now()),
+		CreatedAt: pkg.Ptr(time.Now()),
 	})
 
 	return pkg.WriteJson(f.file, tasks)
@@ -78,10 +67,21 @@ func (f *FileStorage) findTaskByName(tasks []*model.Task, taskName string) (*mod
 	return tasks[idx], nil
 }
 
-func NewFs(path string) Storage {
-	return &FileStorage{file: path}
+func (f *FileStorage) SetDueDate(taskName string, dueAt *time.Time) (err error) {
+	var tasks []*model.Task
+	if tasks, err = f.Get(); err != nil {
+		return err
+	}
+
+	var task *model.Task
+	if task, err = f.findTaskByName(tasks, taskName); err != nil {
+		return err
+	}
+
+	task.DueAt = dueAt
+	return pkg.WriteJson(f.file, tasks)
 }
 
-func ptr[T any](v T) *T {
-	return &v
+func NewFs(path string) Storage {
+	return &FileStorage{file: path}
 }

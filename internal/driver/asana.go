@@ -3,13 +3,14 @@ package driver
 import (
 	"github.com/fadyat/pump/internal/api"
 	"github.com/fadyat/pump/internal/model"
+	"time"
 )
 
 type Asana struct {
 	c *api.AsanaClient
 }
 
-func (a *Asana) Get(filters ...func(task *model.Task) bool) ([]*model.Task, error) {
+func (a *Asana) Get() ([]*model.Task, error) {
 	tasksAsana, err := a.c.GetTasks()
 	if err != nil {
 		return nil, err
@@ -29,6 +30,10 @@ func (a *Asana) Create(taskName string) error {
 
 func (a *Asana) MarkAsDone(taskName string) error {
 	return a.c.MarkAsDone(taskName)
+}
+
+func (a *Asana) SetDueDate(taskName string, dueAt *time.Time) error {
+	return a.c.SetDueDate(taskName, dueAt)
 }
 
 func NewAsana(c *api.AsanaClient) Storage {

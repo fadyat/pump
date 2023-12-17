@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/fadyat/pump/internal/api"
 	"github.com/fadyat/pump/internal/model"
+	"time"
 )
 
 var (
@@ -12,8 +13,9 @@ var (
 )
 
 type Storage interface {
-	Get(filters ...func(task *model.Task) bool) ([]*model.Task, error)
+	Get() ([]*model.Task, error)
 	Create(taskName string) error
+	SetDueDate(taskName string, dueAt *time.Time) error
 	MarkAsDone(taskName string) error
 }
 
