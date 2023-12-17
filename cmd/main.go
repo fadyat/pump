@@ -1,23 +1,29 @@
 package main
 
 import (
-	"fmt"
 	"github.com/fadyat/pump/cmd/commands"
 	"github.com/fadyat/pump/internal"
+	"github.com/fadyat/pump/pkg"
 	"github.com/spf13/cobra"
+	"log"
 )
 
-var (
-	// ConfigPath will be changed when building for production environment
-	//  to ~/.config/pump/config.json
-	ConfigPath = "./.pump/config.json"
-)
+func withConfig() *internal.Config {
+	configPath, err := pkg.HomeDirConfig("config.json")
+	if err != nil {
+		log.Fatalf("failed to get home directory: %v", err)
+	}
+
+	config, err := internal.NewConfig(configPath)
+	if err != nil {
+		log.Fatalf("failed to create config: %v", err)
+	}
+
+	return config
+}
 
 func main() {
-	config, err := internal.NewConfig(ConfigPath)
-	if err != nil {
-		fmt.Println(err)
-	}
+	config := withConfig()
 
 	pump := &cobra.Command{
 		Use:   "pump",
