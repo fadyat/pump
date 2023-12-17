@@ -2,6 +2,7 @@ package api
 
 import (
 	"bitbucket.org/mikehouston/asana-go"
+	"errors"
 )
 
 type AsanaClient struct {
@@ -82,7 +83,7 @@ func (a *AsanaClient) getTaskByName(taskName string) (*asana.Task, error) {
 		}
 	}
 
-	return nil, err
+	return nil, errors.New("task not found")
 }
 
 func ptr[T any](v T) *T {
