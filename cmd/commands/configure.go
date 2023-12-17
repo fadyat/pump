@@ -1,107 +1,154 @@
 package commands
 
 import (
-	"bufio"
-	"fmt"
+	"errors"
+	"github.com/charmbracelet/huh"
 	"github.com/fadyat/pump/internal"
+	"github.com/fadyat/pump/internal/driver/options"
 	"github.com/fadyat/pump/pkg"
 	"github.com/spf13/cobra"
-	"os"
-	"strings"
 )
 
-func getDir(path string) string {
-	return path[:strings.LastIndex(path, "/")]
+const (
+	defaultPrompt                    = "? "
+	defaultAsanaTokenPlaceholder     = "asana-token"
+	defaultAsanaProjectIdPlaceholder = "asana-project-id"
+)
+
+func getPlaceholder(stored, defaultValue string) string {
+	if stored == "" {
+		return defaultValue
+	}
+
+	return stored
 }
 
-func Configure(
-	configPath string,
-) *cobra.Command {
-	reader := bufio.NewReader(os.Stdin)
+func placeholderIsDefaultValue(stored, defaultValue string) bool {
+	return stored == defaultValue
+}
 
-	return &cobra.Command{
+func newAsanaDriverForm(opts, storedOpts *options.AsanaDriver) *huh.Form {
+	var (
+		accessTokenPlaceholder = getPlaceholder(storedOpts.AccessToken, defaultAsanaTokenPlaceholder)
+		projectIdPlaceholder   = getPlaceholder(storedOpts.ProjectID, defaultAsanaProjectIdPlaceholder)
+	)
+
+	return huh.NewForm(
+		huh.NewGroup(
+			huh.NewInput().
+				Title("Enter Asana access key:").
+				Prompt(defaultPrompt).
+				Placeholder(accessTokenPlaceholder).
+				Value(&opts.AccessToken).
+				Validate(func(s string) error {
+					if s == "" && placeholderIsDefaultValue(accessTokenPlaceholder, defaultAsanaTokenPlaceholder) {
+						return errors.New("asana token is required")
+					}
+
+					return nil
+				}),
+		),
+		huh.NewGroup(
+			huh.NewInput().
+				Title("Enter Asana Project ID:").
+				Prompt(defaultPrompt).
+				Placeholder(projectIdPlaceholder).
+				Value(&opts.ProjectID).
+				Validate(func(s string) error {
+					if s == "" && placeholderIsDefaultValue(projectIdPlaceholder, defaultAsanaProjectIdPlaceholder) {
+						return errors.New("asana project id is required")
+					}
+
+					return nil
+				}),
+		),
+	)
+}
+
+func newDriverSelectForm(driver *string) *huh.Form {
+	return huh.NewForm(
+		huh.NewGroup(
+			huh.NewSelect[string]().
+				Title("Select driver").
+				Options(
+					huh.NewOption("Asana", "asana").Selected(true),
+					huh.NewOption("File system", "fs"),
+				).
+				Value(driver),
+		),
+	)
+}
+
+func selectAsanaDriverOptions(config *internal.Config) (map[string]any, error) {
+	var (
+		storedOpts = options.AsanaDriverFromMap(config.DriverOpts)
+		opts       = &options.AsanaDriver{}
+	)
+
+	if err := newAsanaDriverForm(opts, storedOpts).Run(); err != nil {
+		return nil, err
+	}
+
+	return opts.Merge(storedOpts).ToMap(), nil
+}
+
+func selectFileSystemDriverOptions(config *internal.Config) (map[string]any, error) {
+	var opts = &options.FileSystemDriver{}
+
+	opts.TasksFile = pkg.GetDir(config.ConfigPath) + "/tasks.json"
+	return opts.ToMap(), nil
+}
+
+func runDriverOptionsSelection(config *internal.Config, driver string) (map[string]any, error) {
+	switch driver {
+	case "asana":
+		return selectAsanaDriverOptions(config)
+	case "fs":
+		return selectFileSystemDriverOptions(config)
+	}
+
+	return nil, errors.New("unsupported driver")
+}
+
+func Configure(config *internal.Config) *cobra.Command {
+	var (
+		backup     bool
+		fromBackup bool
+	)
+
+	cmd := &cobra.Command{
 		Use:   "configure",
 		Short: "Configure pump",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			fmt.Println("Select a driver:")
-			fmt.Println("1. Asana")
-			fmt.Println("2. Filesystem")
+			if fromBackup {
+				return pkg.RestoreJson(config.ConfigPath)
+			}
 
-			choice, err := readInput(reader)
+			var driver string
+			if err := newDriverSelectForm(&driver).Run(); err != nil {
+				return err
+			}
+
+			driverOptions, err := runDriverOptionsSelection(config, driver)
 			if err != nil {
 				return err
 			}
 
-			var opts map[string]any
-			switch choice {
-			case "1", "asana":
-				choice = "asana"
-				opts, err = asanaOpts(reader)
-			case "2", "fs":
-				choice = "fs"
-				opts, err = fsOpts(getDir(configPath), reader)
-			default:
-				return fmt.Errorf("invalid choice")
+			if backup {
+				if e := pkg.BackupJson(config.ConfigPath); e != nil {
+					return e
+				}
 			}
 
-			if err != nil {
-				return err
-			}
-
-			return pkg.WriteJson(configPath, internal.Config{
-				Driver:     choice,
-				DriverOpts: opts,
+			return pkg.WriteJson(config.ConfigPath, internal.Config{
+				Driver:     driver,
+				DriverOpts: driverOptions,
 			})
 		},
 		SilenceUsage: true,
 	}
-}
 
-func readInput(r *bufio.Reader) (string, error) {
-	input, err := r.ReadString('\n')
-	if err != nil {
-		return "", err
-	}
-
-	return strings.TrimSpace(input), nil
-}
-
-func asanaOpts(
-	reader *bufio.Reader,
-) (map[string]any, error) {
-	fmt.Println("Enter your Asana personal access token:")
-	token, err := readInput(reader)
-	if err != nil {
-		return nil, err
-	}
-
-	fmt.Println("Enter the project ID: (can be found in the URL)")
-	project, err := readInput(reader)
-	if err != nil {
-		return nil, err
-	}
-
-	return map[string]any{
-		"token":   token,
-		"project": project,
-	}, nil
-}
-
-func fsOpts(
-	configDir string,
-	reader *bufio.Reader,
-) (map[string]any, error) {
-	path := fmt.Sprintf("%s/tasks.json", configDir)
-	fmt.Printf("Enter the path to the tasks file: (default: %s)\n", path)
-	input, err := readInput(reader)
-	if err != nil {
-		return nil, err
-	}
-
-	if input != "" {
-		path = input
-	}
-
-	fmt.Printf("Tasks file will be created at %s\n", path)
-	return map[string]any{"file": path}, nil
+	cmd.Flags().BoolVar(&backup, "backup", true, "backup existing config file")
+	cmd.Flags().BoolVar(&fromBackup, "from-backup", false, "read config from backup file")
+	return cmd
 }

@@ -3,6 +3,8 @@ package internal
 import "github.com/fadyat/pump/pkg"
 
 type Config struct {
+	ConfigPath string `json:"-"`
+
 	Driver     string         `json:"driver"`
 	DriverOpts map[string]any `json:"driver_opts"`
 }
@@ -13,6 +15,7 @@ func NewConfig(configPath string) (*Config, error) {
 		return nil, err
 	}
 
+	config.ConfigPath = configPath
 	return &config, nil
 }
 
