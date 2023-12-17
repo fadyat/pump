@@ -65,24 +65,6 @@ func newAsanaDriverForm(opts, storedOpts *options.AsanaDriver) *huh.Form {
 	)
 }
 
-func newFileSystemDriverForm(opts, storedOpts *options.FileSystemDriver) *huh.Form {
-	var (
-
-		// todo: fix this to dir(configPath)/tasks.json
-		tasksPathPlaceholder = "./.pump/tasks.json"
-	)
-
-	// todo: add form
-	return huh.NewForm(
-		huh.NewGroup(
-			huh.NewInput().
-				Title("Enter the path to the tasks file:").
-				Prompt(defaultPrompt).
-				Placeholder(tasksPathPlaceholder),
-		),
-	)
-}
-
 func newDriverSelectForm(driver *string) *huh.Form {
 	return huh.NewForm(
 		huh.NewGroup(
@@ -111,16 +93,10 @@ func selectAsanaDriverOptions(config *internal.Config) (map[string]any, error) {
 }
 
 func selectFileSystemDriverOptions(config *internal.Config) (map[string]any, error) {
-	var (
-		storedOpts = options.FileSystemDriverFromMap(config.DriverOpts)
-		opts       = &options.FileSystemDriver{}
-	)
+	var opts = &options.FileSystemDriver{}
 
-	if err := newFileSystemDriverForm(opts, storedOpts).Run(); err != nil {
-		return nil, err
-	}
-
-	return opts.Merge(storedOpts).ToMap(), nil
+	opts.TasksFile = pkg.GetDir(config.ConfigPath) + "/tasks.json"
+	return opts.ToMap(), nil
 }
 
 func runDriverOptionsSelection(config *internal.Config, driver string) (map[string]any, error) {
@@ -135,12 +111,20 @@ func runDriverOptionsSelection(config *internal.Config, driver string) (map[stri
 }
 
 func ConfigureV2(config *internal.Config) *cobra.Command {
-	return &cobra.Command{
+	var (
+		backup     bool
+		fromBackup bool
+	)
+
+	cmd := &cobra.Command{
 		Use:   "configure-v2",
 		Short: "Configure pump via tui",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			var driver string
+			if fromBackup {
+				return pkg.RestoreJson(config.ConfigPath)
+			}
 
+			var driver string
 			if err := newDriverSelectForm(&driver).Run(); err != nil {
 				return err
 			}
@@ -150,6 +134,12 @@ func ConfigureV2(config *internal.Config) *cobra.Command {
 				return err
 			}
 
+			if backup {
+				if e := pkg.BackupJson(config.ConfigPath); e != nil {
+					return e
+				}
+			}
+
 			return pkg.WriteJson(config.ConfigPath, internal.Config{
 				Driver:     driver,
 				DriverOpts: driverOptions,
@@ -157,4 +147,8 @@ func ConfigureV2(config *internal.Config) *cobra.Command {
 		},
 		SilenceUsage: true,
 	}
+
+	cmd.Flags().BoolVar(&backup, "backup", true, "backup existing config file")
+	cmd.Flags().BoolVar(&fromBackup, "from-backup", false, "read config from backup file")
+	return cmd
 }

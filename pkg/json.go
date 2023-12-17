@@ -50,3 +50,29 @@ func WriteJson(path string, v interface{}) error {
 
 	return os.WriteFile(path, data, 0o600)
 }
+
+func BackupJson(path string) error {
+	var content, err = readFileBytes(path)
+	switch {
+	case errors.Is(err, ErrFileNotFound):
+		return nil
+	case err != nil:
+		return err
+	}
+
+	var backupPath = RenameWithSuffix(path, "-prev")
+	return os.WriteFile(backupPath, content, 0o600)
+}
+
+func RestoreJson(path string) error {
+	var backupPath = RenameWithSuffix(path, "-prev")
+	var content, err = readFileBytes(backupPath)
+	switch {
+	case errors.Is(err, ErrFileNotFound):
+		return nil
+	case err != nil:
+		return err
+	}
+
+	return os.WriteFile(path, content, 0o600)
+}
