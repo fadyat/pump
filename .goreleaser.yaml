@@ -11,7 +11,7 @@ before:
 builds:
   - env:
       - CGO_ENABLED=0
-      - CONFIG_PATH=$PWD/.config/pump
+      - CONFIG_PATH=$HOME/.config/pump
     goos:
       - linux
       - darwin
@@ -38,11 +38,11 @@ brews:
   - name: pump
     repository:
       owner: fadyat
-      name: pump
+      name: homebrew-apps
       branch: master
     commit_author:
       name: fadyat
-      email: itsfadyat@gmail.com
+      email: fadyat@icloud.com
     commit_msg_template: "Brew formula update for {{ .ProjectName }} version {{ .Tag }}"
     description: "A little randomness for choosing tasks in your world"
     homepage: "https://github.com/fadyat/pump"
