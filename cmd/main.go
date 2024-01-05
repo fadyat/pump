@@ -8,6 +8,10 @@ import (
 	"log"
 )
 
+var (
+	Version = "dev"
+)
+
 func withConfig() *internal.Config {
 	configPath, err := pkg.HomeDirConfig("config.json")
 	if err != nil {
@@ -35,6 +39,13 @@ func main() {
 	pump.AddCommand(commands.AddTask(config))
 	pump.AddCommand(commands.MarkTaskAsDone(config))
 	pump.AddCommand(commands.SelectTask(config))
+	pump.AddCommand(&cobra.Command{
+		Use:   "version",
+		Short: "Print the version number of Pump",
+		Run: func(cmd *cobra.Command, args []string) {
+			cmd.Println("Pump version:", Version)
+		},
+	})
 
 	_ = pump.Execute()
 }

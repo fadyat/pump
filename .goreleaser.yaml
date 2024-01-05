@@ -8,10 +8,12 @@ before:
     - go mod tidy
     - go generate ./...
 
+snapshot:
+  name_template: "{{ .Tag }}"
+
 builds:
   - env:
       - CGO_ENABLED=0
-      - CONFIG_PATH=$HOME/.config/pump
     goos:
       - linux
       - darwin
@@ -19,7 +21,7 @@ builds:
     id: pump
     binary: pump
     dir: ./cmd
-    ldflags: "-X main.ConfigPath={{ .Env.CONFIG_PATH }}/config.json -s -w"
+    ldflags: "-s -w -X main.Version={{ .Tag }}"
 
 archives:
   - format: tar.gz
