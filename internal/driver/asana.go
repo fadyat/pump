@@ -28,12 +28,12 @@ func (a *Asana) Create(taskName string) error {
 	return a.c.CreateTask(taskName)
 }
 
-func (a *Asana) MarkAsDone(taskName string) error {
-	return a.c.MarkAsDone(taskName)
+func (a *Asana) MarkAsDone(taskID string) error {
+	return a.c.MarkAsDone(taskID)
 }
 
-func (a *Asana) SetDueDate(taskName string, dueAt *time.Time) error {
-	return a.c.SetDueDate(taskName, dueAt)
+func (a *Asana) SetDueDate(taskID string, dueAt *time.Time) error {
+	return a.c.SetDueDate(taskID, dueAt)
 }
 
 func NewAsana(c *api.AsanaClient) Storage {

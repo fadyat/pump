@@ -11,7 +11,7 @@ import (
 func MarkTaskAsDone(
 	config *internal.Config,
 ) *cobra.Command {
-	var taskName string
+	var taskID string
 
 	return &cobra.Command{
 		Use:     "done [name]",
@@ -19,10 +19,10 @@ func MarkTaskAsDone(
 		Aliases: []string{"ok", "complete", "finish"},
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) == 0 {
-				return fmt.Errorf("task name is required")
+				return fmt.Errorf("task id is required")
 			}
 
-			taskName = strings.TrimSpace(args[0])
+			taskID = strings.TrimSpace(args[0])
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -32,7 +32,7 @@ func MarkTaskAsDone(
 			}
 
 			var svc = internal.NewSvc(driv)
-			if err := svc.MarkAsDone(taskName); err != nil {
+			if err := svc.MarkAsDone(taskID); err != nil {
 				return err
 			}
 

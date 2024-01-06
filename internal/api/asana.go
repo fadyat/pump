@@ -2,9 +2,12 @@ package api
 
 import (
 	"bitbucket.org/mikehouston/asana-go"
-	"errors"
 	"github.com/fadyat/pump/pkg"
 	"time"
+)
+
+const (
+	tasksLimit = 100
 )
 
 type AsanaClient struct {
@@ -29,8 +32,9 @@ func (a *AsanaClient) GetTasks() ([]*asana.Task, error) {
 			CompletedSince: "now",
 		}
 		option = &asana.Options{
-			Limit: 100,
+			Limit: tasksLimit,
 			Fields: []string{
+				"id",
 				"created_at",
 				"due_at",
 				"completed",
@@ -57,50 +61,27 @@ func (a *AsanaClient) CreateTask(taskName string) error {
 	return err
 }
 
-func (a *AsanaClient) MarkAsDone(taskName string) error {
-	// fixme: think about marking as done via ID, fetching all tasks it's too much
-	task, err := a.getTaskByName(taskName)
-	if err != nil {
-		return err
-	}
+func (a *AsanaClient) MarkAsDone(taskID string) error {
+	task := &asana.Task{ID: taskID}
 
-	taskUpdateRequest := &asana.UpdateTaskRequest{
+	update := &asana.UpdateTaskRequest{
 		TaskBase: asana.TaskBase{
-			Name:      task.Name,
 			Completed: pkg.Ptr(true),
 		},
 	}
 
-	return task.Update(a.c, taskUpdateRequest)
+	return task.Update(a.c, update)
 }
 
-func (a *AsanaClient) SetDueDate(taskName string, dueAt *time.Time) error {
-	task, err := a.getTaskByName(taskName)
-	if err != nil {
-		return err
-	}
+func (a *AsanaClient) SetDueDate(taskID string, dueAt *time.Time) error {
+	task := &asana.Task{ID: taskID}
 
-	taskUpdateRequest := &asana.UpdateTaskRequest{
+	update := &asana.UpdateTaskRequest{
 		TaskBase: asana.TaskBase{
 			Name:  task.Name,
 			DueAt: dueAt,
 		},
 	}
 
-	return task.Update(a.c, taskUpdateRequest)
-}
-
-func (a *AsanaClient) getTaskByName(taskName string) (*asana.Task, error) {
-	tasks, err := a.GetTasks()
-	if err != nil {
-		return nil, err
-	}
-
-	for _, task := range tasks {
-		if task.Name == taskName {
-			return task, nil
-		}
-	}
-
-	return nil, errors.New("task not found")
+	return task.Update(a.c, update)
 }

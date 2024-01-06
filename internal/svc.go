@@ -16,7 +16,7 @@ var (
 type Service interface {
 	Get() ([]*model.Task, error)
 	Create(taskName string) error
-	MarkAsDone(taskName string) error
+	MarkAsDone(taskID string) error
 	SelectGoal(dueAt *time.Time) (*model.Task, error)
 }
 
@@ -36,8 +36,8 @@ func (r *svc) Create(taskName string) error {
 	return r.storage.Create(taskName)
 }
 
-func (r *svc) MarkAsDone(taskName string) error {
-	return r.storage.MarkAsDone(taskName)
+func (r *svc) MarkAsDone(taskID string) error {
+	return r.storage.MarkAsDone(taskID)
 }
 
 func (r *svc) SelectGoal(dueAt *time.Time) (*model.Task, error) {
@@ -55,7 +55,7 @@ func (r *svc) SelectGoal(dueAt *time.Time) (*model.Task, error) {
 		return nil, err
 	}
 
-	if err = r.storage.SetDueDate(selectedTask.Name, dueAt); err != nil {
+	if err := r.storage.SetDueDate(selectedTask.ID, dueAt); err != nil {
 		return nil, err
 	}
 

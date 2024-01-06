@@ -6,10 +6,11 @@ import (
 )
 
 type Task struct {
-	Name      string
-	CreatedAt *time.Time
-	DueAt     *time.Time
-	Done      bool
+	ID        string     `json:"id"`
+	Name      string     `json:"name"`
+	CreatedAt *time.Time `json:"created_at"`
+	DueAt     *time.Time `json:"due_at"`
+	Done      bool       `json:"done"`
 }
 
 func (t *Task) ToPrintable() []string {
@@ -19,6 +20,7 @@ func (t *Task) ToPrintable() []string {
 	}
 
 	return []string{
+		t.ID,
 		t.Name,
 		t.CreatedAt.Format("2006-01-02 15:04:05"),
 		dueAt,
@@ -32,6 +34,7 @@ func FromAsanaTask(task *asana.Task) *Task {
 	}
 
 	return &Task{
+		ID:        task.ID,
 		Name:      task.Name,
 		CreatedAt: task.CreatedAt,
 		Done:      completed,

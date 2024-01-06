@@ -33,6 +33,7 @@ func (f *FileStorage) Create(taskName string) (err error) {
 	}
 
 	tasks = append(tasks, &model.Task{
+		ID:        pkg.RandString(8),
 		Name:      taskName,
 		CreatedAt: pkg.Ptr(time.Now()),
 	})
@@ -40,14 +41,14 @@ func (f *FileStorage) Create(taskName string) (err error) {
 	return pkg.WriteJson(f.file, tasks)
 }
 
-func (f *FileStorage) MarkAsDone(taskName string) (err error) {
+func (f *FileStorage) MarkAsDone(taskID string) (err error) {
 	var tasks []*model.Task
 	if tasks, err = f.Get(); err != nil {
 		return err
 	}
 
 	var task *model.Task
-	if task, err = f.findTaskByName(tasks, taskName); err != nil {
+	if task, err = f.findTaskByID(tasks, taskID); err != nil {
 		return err
 	}
 
@@ -55,9 +56,9 @@ func (f *FileStorage) MarkAsDone(taskName string) (err error) {
 	return pkg.WriteJson(f.file, tasks)
 }
 
-func (f *FileStorage) findTaskByName(tasks []*model.Task, taskName string) (*model.Task, error) {
+func (f *FileStorage) findTaskByID(tasks []*model.Task, taskID string) (*model.Task, error) {
 	var idx = slices.IndexFunc(tasks, func(task *model.Task) bool {
-		return task.Name == taskName
+		return task.ID == taskID
 	})
 
 	if idx == -1 {
@@ -67,14 +68,14 @@ func (f *FileStorage) findTaskByName(tasks []*model.Task, taskName string) (*mod
 	return tasks[idx], nil
 }
 
-func (f *FileStorage) SetDueDate(taskName string, dueAt *time.Time) (err error) {
+func (f *FileStorage) SetDueDate(taskID string, dueAt *time.Time) (err error) {
 	var tasks []*model.Task
 	if tasks, err = f.Get(); err != nil {
 		return err
 	}
 
 	var task *model.Task
-	if task, err = f.findTaskByName(tasks, taskName); err != nil {
+	if task, err = f.findTaskByID(tasks, taskID); err != nil {
 		return err
 	}
 

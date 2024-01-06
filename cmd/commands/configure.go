@@ -117,8 +117,9 @@ func Configure(config *internal.Config) *cobra.Command {
 	)
 
 	cmd := &cobra.Command{
-		Use:   "configure",
-		Short: "Configure pump",
+		Use:     "configure",
+		Short:   "Configure pump",
+		Aliases: []string{"config", "conf", "cfg"},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if fromBackup {
 				return pkg.RestoreJson(config.ConfigPath)

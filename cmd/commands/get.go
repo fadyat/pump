@@ -22,7 +22,7 @@ func GetAvailableTask(
 
 			var (
 				svc     = internal.NewSvc(driv)
-				printer = internal.NewTablePrinter("name", "created at", "due at")
+				printer = internal.NewTablePrinter("id", "name", "created at", "due at")
 				tasks   []*model.Task
 			)
 

@@ -14,8 +14,9 @@ func AddTask(
 	var taskName string
 
 	return &cobra.Command{
-		Use:   "add [name]",
-		Short: "Add a new task",
+		Use:     "add [name]",
+		Short:   "Add a new task",
+		Aliases: []string{"new", "create"},
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) == 0 {
 				return fmt.Errorf("task name is required")

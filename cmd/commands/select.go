@@ -54,7 +54,7 @@ func SelectTask(
 				return err
 			}
 
-			printer := internal.NewTablePrinter("name", "created at", "due at")
+			printer := internal.NewTablePrinter("id", "name", "created at", "due at")
 			printer.Print([][]string{task.ToPrintable()})
 			return nil
 		},
