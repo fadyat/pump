@@ -6,6 +6,6 @@ So, I've devised a quirky solution:
 Every task contributes to my skills - let fate decide my next move!
 
 ```
-homebrew tap fadyat/apps
+brew tap fadyat/apps
 brew install fadyat/apps/pump
 ```
