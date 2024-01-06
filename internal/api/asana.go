@@ -85,3 +85,13 @@ func (a *AsanaClient) SetDueDate(taskID string, dueAt *time.Time) error {
 
 	return task.Update(a.c, update)
 }
+
+func (a *AsanaClient) GetTask(id string) (*asana.Task, error) {
+	task := &asana.Task{ID: id}
+	err := task.Fetch(a.c)
+	if err != nil {
+		return nil, err
+	}
+
+	return task, nil
+}

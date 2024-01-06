@@ -1,11 +1,10 @@
 package internal
 
 import (
-	"crypto/rand"
 	"errors"
 	"github.com/fadyat/pump/internal/driver"
 	"github.com/fadyat/pump/internal/model"
-	"math/big"
+	"github.com/fadyat/pump/pkg"
 	"time"
 )
 
@@ -17,7 +16,7 @@ type Service interface {
 	Get() ([]*model.Task, error)
 	Create(taskName string) error
 	MarkAsDone(taskID string) error
-	SelectGoal(dueAt *time.Time) (*model.Task, error)
+	SelectGoal(manualTaskID string, dueAt *time.Time) (*model.Task, error)
 }
 
 type svc struct {
@@ -40,17 +39,17 @@ func (r *svc) MarkAsDone(taskID string) error {
 	return r.storage.MarkAsDone(taskID)
 }
 
-func (r *svc) SelectGoal(dueAt *time.Time) (*model.Task, error) {
-	tasks, err := r.storage.Get()
-	if err != nil {
-		return nil, err
-	}
+func (r *svc) SelectGoal(manualTaskID string, dueAt *time.Time) (*model.Task, error) {
+	var (
+		selectedTask *model.Task
+		err          error
+	)
 
-	if len(tasks) == 0 {
-		return nil, ErrTaskNotFound
+	if manualTaskID != "" {
+		selectedTask, err = r.storage.GetByID(manualTaskID)
+	} else {
+		selectedTask, err = r.selectRndTask()
 	}
-
-	selectedTask, err := takeRandomTask(tasks)
 	if err != nil {
 		return nil, err
 	}
@@ -62,11 +61,15 @@ func (r *svc) SelectGoal(dueAt *time.Time) (*model.Task, error) {
 	return selectedTask, nil
 }
 
-func takeRandomTask(tasks []*model.Task) (*model.Task, error) {
-	bigInt, err := rand.Int(rand.Reader, big.NewInt(int64(len(tasks))))
+func (r *svc) selectRndTask() (*model.Task, error) {
+	tasks, err := r.storage.Get()
 	if err != nil {
 		return nil, err
 	}
 
-	return tasks[bigInt.Int64()], nil
+	if len(tasks) == 0 {
+		return nil, ErrTaskNotFound
+	}
+
+	return pkg.TakeRand(tasks), nil
 }

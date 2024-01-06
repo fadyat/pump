@@ -14,6 +14,7 @@ var (
 
 type Storage interface {
 	Get() ([]*model.Task, error)
+	GetByID(taskID string) (*model.Task, error)
 	Create(taskName string) error
 	SetDueDate(taskID string, dueAt *time.Time) error
 	MarkAsDone(taskID string) error

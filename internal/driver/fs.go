@@ -56,6 +56,14 @@ func (f *FileStorage) MarkAsDone(taskID string) (err error) {
 	return pkg.WriteJson(f.file, tasks)
 }
 
+func (f *FileStorage) GetByID(taskID string) (*model.Task, error) {
+	if tasks, err := f.Get(); err != nil {
+		return nil, err
+	} else {
+		return f.findTaskByID(tasks, taskID)
+	}
+}
+
 func (f *FileStorage) findTaskByID(tasks []*model.Task, taskID string) (*model.Task, error) {
 	var idx = slices.IndexFunc(tasks, func(task *model.Task) bool {
 		return task.ID == taskID

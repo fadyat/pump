@@ -1,6 +1,8 @@
 package pkg
 
-import "math/rand"
+import (
+	"math/rand"
+)
 
 func RandString(l int) string {
 	var (
@@ -14,4 +16,9 @@ func RandString(l int) string {
 	}
 
 	return string(b)
+}
+
+func TakeRand[T any](s []T) T {
+	// nolint:gosec // don't need cryptographically secure random
+	return s[rand.Intn(len(s))]
 }

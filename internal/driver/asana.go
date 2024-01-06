@@ -24,6 +24,15 @@ func (a *Asana) Get() ([]*model.Task, error) {
 	return tasks, nil
 }
 
+func (a *Asana) GetByID(taskID string) (*model.Task, error) {
+	taskAsana, err := a.c.GetTask(taskID)
+	if err != nil {
+		return nil, err
+	}
+
+	return model.FromAsanaTask(taskAsana), nil
+}
+
 func (a *Asana) Create(taskName string) error {
 	return a.c.CreateTask(taskName)
 }

@@ -27,6 +27,7 @@ func SelectTask(
 ) *cobra.Command {
 	var (
 		workInterval = DayInterval
+		manualTaskID string
 	)
 
 	cmd := &cobra.Command{
@@ -36,6 +37,10 @@ func SelectTask(
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if workInterval != DayInterval && workInterval != WeekInterval {
 				return errors.New("invalid work interval")
+			}
+
+			if len(args) > 0 {
+				manualTaskID = args[0]
 			}
 
 			return nil
@@ -48,6 +53,7 @@ func SelectTask(
 
 			svc := internal.NewSvc(driv)
 			task, err := svc.SelectGoal(
+				manualTaskID,
 				pkg.Ptr(pkg.Now().Add(timeNeeded(workInterval))),
 			)
 			if err != nil {
