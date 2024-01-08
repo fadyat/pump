@@ -5,7 +5,7 @@ run:
   timeout: 5m
   allow-parallel-runners: true
   concurrency: 2
-  issue-exit-code: 0
+  issues-exit-code: 1
   skip-dirs:
     - vendor
 
