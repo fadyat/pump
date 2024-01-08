@@ -3,9 +3,6 @@
 
 package tools
 
-// Managing tools with Go Modules:
-//
-
 import (
 	_ "github.com/golangci/golangci-lint/cmd/golangci-lint"
 	_ "github.com/goreleaser/goreleaser"
