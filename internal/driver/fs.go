@@ -35,7 +35,7 @@ func (f *FileStorage) Create(taskName string) (err error) {
 	tasks = append(tasks, &model.Task{
 		ID:        pkg.RandString(8),
 		Name:      taskName,
-		CreatedAt: pkg.Ptr(time.Now()),
+		CreatedAt: pkg.Now(),
 	})
 
 	return pkg.WriteJson(f.file, tasks)

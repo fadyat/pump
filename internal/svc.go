@@ -58,6 +58,7 @@ func (r *svc) SelectGoal(manualTaskID string, dueAt *time.Time) (*model.Task, er
 		return nil, err
 	}
 
+	selectedTask.DueAt = dueAt
 	return selectedTask, nil
 }
 

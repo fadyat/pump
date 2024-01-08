@@ -9,5 +9,5 @@ func Ptr[T any](v T) *T {
 func Now() *time.Time {
 	f := time.Now().Format(time.RFC3339)
 	t, _ := time.Parse(time.RFC3339, f)
-	return &t
+	return Ptr(t.UTC())
 }
