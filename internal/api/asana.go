@@ -81,6 +81,7 @@ func (a *AsanaClient) SetDueDate(taskID string, dueAt *time.Time) error {
 			Name:  task.Name,
 			DueAt: dueAt,
 		},
+		Assignee: "me",
 	}
 
 	return task.Update(a.c, update)
