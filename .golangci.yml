@@ -69,4 +69,7 @@ issues:
     - text: "ST1003:"
       linters:
         - stylecheck
+    - text: "G204: Subprocess launched with a potential tainted input or cmd arguments"
+      linters:
+        - gosec
   exclude-use-default: false

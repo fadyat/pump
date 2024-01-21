@@ -14,6 +14,7 @@ var (
 
 type Service interface {
 	Get() ([]*model.Task, error)
+	GetByID(taskID string) (*model.Task, error)
 	Create(taskName string) error
 	MarkAsDone(taskID string) error
 	SelectGoal(manualTaskID string, dueAt *time.Time) (*model.Task, error)
@@ -29,6 +30,10 @@ func NewSvc(storage driver.Storage) Service {
 
 func (r *svc) Get() ([]*model.Task, error) {
 	return r.storage.Get()
+}
+
+func (r *svc) GetByID(taskID string) (*model.Task, error) {
+	return r.storage.GetByID(taskID)
 }
 
 func (r *svc) Create(taskName string) error {
