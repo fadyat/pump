@@ -25,6 +25,10 @@ func BrowseTask(cfg *internal.Config) *cobra.Command {
 				taskID = args[0]
 			}
 
+			if taskID == "" {
+				return fmt.Errorf("task id is required")
+			}
+
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
