@@ -2,6 +2,7 @@ package commands
 
 import (
 	"errors"
+	"fmt"
 	"github.com/fadyat/pump/internal"
 	"github.com/fadyat/pump/internal/driver"
 	"github.com/fadyat/pump/pkg"
@@ -60,8 +61,10 @@ func SelectTask(
 				return err
 			}
 
-			printer := internal.NewTablePrinter("id", "name", "created at", "due at")
-			printer.Print([][]string{task.ToPrintable()})
+			cmd.Println(
+				fmt.Sprintf("Your task for the %s is:", workInterval),
+				fmt.Sprintf(`"%s" (%s)`, task.Name, task.ID),
+			)
 			return nil
 		},
 		SilenceUsage: true,
