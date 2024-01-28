@@ -5,13 +5,15 @@ import (
 	"github.com/fadyat/pump/internal"
 	"github.com/fadyat/pump/internal/driver"
 	"github.com/spf13/cobra"
+	"log/slog"
 	"strings"
 )
 
 func MarkTaskAsDone(config *internal.Config) *cobra.Command {
 	var (
-		taskID string
-		invert bool
+		taskID  string
+		summary string
+		invert  bool
 	)
 
 	cmd := &cobra.Command{
@@ -21,6 +23,10 @@ func MarkTaskAsDone(config *internal.Config) *cobra.Command {
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) == 0 {
 				return fmt.Errorf("task id is required")
+			}
+
+			if config.Driver != "asana" && summary != "" {
+				slog.Warn("summary is only supported by asana driver")
 			}
 
 			taskID = strings.TrimSpace(args[0])
@@ -38,11 +44,12 @@ func MarkTaskAsDone(config *internal.Config) *cobra.Command {
 				action = svc.Reopen
 			}
 
-			return action(taskID)
+			return action(taskID, summary)
 		},
 		SilenceUsage: true,
 	}
 
 	cmd.Flags().BoolVarP(&invert, "invert", "i", false, "Reopen a task instead of marking it as done")
+	cmd.Flags().StringVarP(&summary, "summary", "s", "", "Summary of the task")
 	return cmd
 }

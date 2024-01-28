@@ -63,7 +63,7 @@ func SelectTask(
 
 			cmd.Println(
 				fmt.Sprintf("Your task for the %s is:", workInterval),
-				fmt.Sprintf(`"%s" (%s)`, task.Name, task.ID),
+				fmt.Sprintf("%q (%s)", task.Name, task.ID),
 			)
 			return nil
 		},

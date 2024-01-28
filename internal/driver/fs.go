@@ -41,11 +41,11 @@ func (f *FileStorage) Create(taskName string) (err error) {
 	return pkg.WriteJson(f.file, tasks)
 }
 
-func (f *FileStorage) MarkAsDone(taskID string) error {
+func (f *FileStorage) MarkAsDone(taskID, _ string) error {
 	return f.changeCompletedStatus(taskID, true)
 }
 
-func (f *FileStorage) Reopen(taskID string) error {
+func (f *FileStorage) Reopen(taskID, _ string) error {
 	return f.changeCompletedStatus(taskID, false)
 }
 

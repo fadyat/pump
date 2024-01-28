@@ -60,7 +60,7 @@ func (a *AsanaClient) CreateTask(taskName string) error {
 	return err
 }
 
-func (a *AsanaClient) ChangeCompletedStatus(taskID string, status bool) error {
+func (a *AsanaClient) ChangeCompletedStatus(taskID, summary string, status bool) error {
 	task := &asana.Task{ID: taskID}
 
 	update := &asana.UpdateTaskRequest{
@@ -69,7 +69,20 @@ func (a *AsanaClient) ChangeCompletedStatus(taskID string, status bool) error {
 		},
 	}
 
-	return task.Update(a.c, update)
+	if err := task.Update(a.c, update); err != nil {
+		return err
+	}
+
+	if summary == "" {
+		return nil
+	}
+
+	_, err := task.CreateComment(a.c, &asana.StoryBase{
+		Text:     summary,
+		IsPinned: false,
+	})
+
+	return err
 }
 
 func (a *AsanaClient) SetDueDate(taskID string, dueAt *time.Time) error {

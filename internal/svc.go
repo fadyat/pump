@@ -16,9 +16,9 @@ type Service interface {
 	Get() ([]*model.Task, error)
 	GetByID(taskID string) (*model.Task, error)
 	Create(taskName string) error
-	MarkAsDone(taskID string) error
+	MarkAsDone(taskID, summary string) error
 	SelectGoal(manualTaskID string, dueAt *time.Time) (*model.Task, error)
-	Reopen(taskID string) error
+	Reopen(taskID, summary string) error
 }
 
 type svc struct {
@@ -41,8 +41,8 @@ func (r *svc) Create(taskName string) error {
 	return r.storage.Create(taskName)
 }
 
-func (r *svc) MarkAsDone(taskID string) error {
-	return r.storage.MarkAsDone(taskID)
+func (r *svc) MarkAsDone(taskID, summary string) error {
+	return r.storage.MarkAsDone(taskID, summary)
 }
 
 func (r *svc) SelectGoal(manualTaskID string, dueAt *time.Time) (*model.Task, error) {
@@ -68,8 +68,8 @@ func (r *svc) SelectGoal(manualTaskID string, dueAt *time.Time) (*model.Task, er
 	return selectedTask, nil
 }
 
-func (r *svc) Reopen(taskID string) error {
-	return r.storage.Reopen(taskID)
+func (r *svc) Reopen(taskID, summary string) error {
+	return r.storage.Reopen(taskID, summary)
 }
 
 func (r *svc) selectRndTask() (*model.Task, error) {
