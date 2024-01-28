@@ -41,7 +41,15 @@ func (f *FileStorage) Create(taskName string) (err error) {
 	return pkg.WriteJson(f.file, tasks)
 }
 
-func (f *FileStorage) MarkAsDone(taskID string) (err error) {
+func (f *FileStorage) MarkAsDone(taskID string) error {
+	return f.changeCompletedStatus(taskID, true)
+}
+
+func (f *FileStorage) Reopen(taskID string) error {
+	return f.changeCompletedStatus(taskID, false)
+}
+
+func (f *FileStorage) changeCompletedStatus(taskID string, status bool) (err error) {
 	var tasks []*model.Task
 	if tasks, err = f.Get(); err != nil {
 		return err
@@ -52,7 +60,7 @@ func (f *FileStorage) MarkAsDone(taskID string) (err error) {
 		return err
 	}
 
-	task.Done = true
+	task.Done = status
 	return pkg.WriteJson(f.file, tasks)
 }
 

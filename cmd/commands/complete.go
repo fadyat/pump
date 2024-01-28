@@ -8,13 +8,14 @@ import (
 	"strings"
 )
 
-func MarkTaskAsDone(
-	config *internal.Config,
-) *cobra.Command {
-	var taskID string
+func MarkTaskAsDone(config *internal.Config) *cobra.Command {
+	var (
+		taskID string
+		invert bool
+	)
 
-	return &cobra.Command{
-		Use:     "done [name]",
+	cmd := &cobra.Command{
+		Use:     "done [task_id]",
 		Short:   "Mark a task as done",
 		Aliases: []string{"ok", "complete", "finish"},
 		Args: func(cmd *cobra.Command, args []string) error {
@@ -32,13 +33,16 @@ func MarkTaskAsDone(
 			}
 
 			var svc = internal.NewSvc(driv)
-			if err := svc.MarkAsDone(taskID); err != nil {
-				return err
+			var action = svc.MarkAsDone
+			if invert {
+				action = svc.Reopen
 			}
 
-			fmt.Println("Task marked as done successfully")
-			return nil
+			return action(taskID)
 		},
 		SilenceUsage: true,
 	}
+
+	cmd.Flags().BoolVarP(&invert, "invert", "i", false, "Reopen a task instead of marking it as done")
+	return cmd
 }

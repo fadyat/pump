@@ -38,7 +38,11 @@ func (a *Asana) Create(taskName string) error {
 }
 
 func (a *Asana) MarkAsDone(taskID string) error {
-	return a.c.MarkAsDone(taskID)
+	return a.c.ChangeCompletedStatus(taskID, true)
+}
+
+func (a *Asana) Reopen(taskID string) error {
+	return a.c.ChangeCompletedStatus(taskID, false)
 }
 
 func (a *Asana) SetDueDate(taskID string, dueAt *time.Time) error {

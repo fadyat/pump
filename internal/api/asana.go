@@ -2,7 +2,6 @@ package api
 
 import (
 	"bitbucket.org/mikehouston/asana-go"
-	"github.com/fadyat/pump/pkg"
 	"time"
 )
 
@@ -61,12 +60,12 @@ func (a *AsanaClient) CreateTask(taskName string) error {
 	return err
 }
 
-func (a *AsanaClient) MarkAsDone(taskID string) error {
+func (a *AsanaClient) ChangeCompletedStatus(taskID string, status bool) error {
 	task := &asana.Task{ID: taskID}
 
 	update := &asana.UpdateTaskRequest{
 		TaskBase: asana.TaskBase{
-			Completed: pkg.Ptr(true),
+			Completed: &status,
 		},
 	}
 
