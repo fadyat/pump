@@ -11,16 +11,26 @@ import (
 )
 
 const (
-	WeekInterval = "week"
-	DayInterval  = "day"
+	MonthInterval = "month"
+	WeekInterval  = "week"
+	DayInterval   = "day"
 )
 
 func timeNeeded(interval string) time.Duration {
-	if interval == WeekInterval {
+	switch interval {
+	case MonthInterval:
+		return 30 * 24 * time.Hour
+	case WeekInterval:
 		return 7 * 24 * time.Hour
+	case DayInterval:
+		return 24 * time.Hour
 	}
 
-	return 24 * time.Hour
+	return 0
+}
+
+func isValidWorkInterval(interval string) bool {
+	return interval == MonthInterval || interval == WeekInterval || interval == DayInterval
 }
 
 func SelectTask(
@@ -36,7 +46,7 @@ func SelectTask(
 		Short:   "Select a task to work on",
 		Aliases: []string{"todo", "do"},
 		PreRunE: func(cmd *cobra.Command, args []string) error {
-			if workInterval != DayInterval && workInterval != WeekInterval {
+			if !isValidWorkInterval(workInterval) {
 				return errors.New("invalid work interval")
 			}
 
@@ -71,5 +81,12 @@ func SelectTask(
 	}
 
 	cmd.Flags().StringVarP(&workInterval, "interval", "i", DayInterval, "work interval")
+	_ = cmd.RegisterFlagCompletionFunc(
+		"interval",
+		func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return []string{MonthInterval, WeekInterval, DayInterval}, cobra.ShellCompDirectiveNoFileComp
+		},
+	)
+
 	return cmd
 }
