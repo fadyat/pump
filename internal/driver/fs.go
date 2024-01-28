@@ -99,6 +99,23 @@ func (f *FileStorage) SetDueDate(taskID string, dueAt *time.Time) (err error) {
 	return pkg.WriteJson(f.file, tasks)
 }
 
+func (f *FileStorage) Update(task *model.Task) (err error) {
+	var tasks []*model.Task
+	if tasks, err = f.Get(); err != nil {
+		return err
+	}
+
+	var have *model.Task
+	if have, err = f.findTaskByID(tasks, task.ID); err != nil {
+		return err
+	}
+
+	have.Name = task.Name
+	have.Description = task.Description
+	have.DueAt = task.DueAt
+	return pkg.WriteJson(f.file, tasks)
+}
+
 func NewFs(path string) Storage {
 	return &FileStorage{file: path}
 }

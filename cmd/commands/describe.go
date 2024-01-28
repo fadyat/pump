@@ -11,8 +11,9 @@ func DescribeTask(cfg *internal.Config) *cobra.Command {
 	var taskID string
 
 	return &cobra.Command{
-		Use:   "describe",
-		Short: "Describe specified task",
+		Use:     "describe",
+		Short:   "Describe specified task",
+		Aliases: []string{"edit"},
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if cfg.Driver != "asana" {
 				return fmt.Errorf("asana driver is only supported")
@@ -44,11 +45,15 @@ func DescribeTask(cfg *internal.Config) *cobra.Command {
 				return err
 			}
 
-			if err := editor.Edit([]string{task.Name, task.Description}); err != nil {
+			modified, err := editor.Edit([]string{task.Name, task.Description})
+			if err != nil {
 				return err
 			}
 
-			return nil
+			task.Name = modified[0]
+			task.Description = modified[1]
+
+			return svc.Update(task)
 		},
 		SilenceUsage: true,
 	}

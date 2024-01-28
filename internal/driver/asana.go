@@ -49,6 +49,10 @@ func (a *Asana) SetDueDate(taskID string, dueAt *time.Time) error {
 	return a.c.SetDueDate(taskID, dueAt)
 }
 
+func (a *Asana) Update(task *model.Task) error {
+	return a.c.UpdateTask(task)
+}
+
 func NewAsana(c *api.AsanaClient) Storage {
 	return &Asana{c: c}
 }

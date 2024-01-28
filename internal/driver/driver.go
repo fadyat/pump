@@ -19,6 +19,7 @@ type Storage interface {
 	SetDueDate(taskID string, dueAt *time.Time) error
 	MarkAsDone(taskID, summary string) error
 	Reopen(taskID, summary string) error
+	Update(task *model.Task) error
 }
 
 func New(

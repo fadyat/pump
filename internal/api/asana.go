@@ -2,6 +2,7 @@ package api
 
 import (
 	"bitbucket.org/mikehouston/asana-go"
+	"github.com/fadyat/pump/internal/model"
 	"time"
 )
 
@@ -107,4 +108,17 @@ func (a *AsanaClient) GetTask(id string) (*asana.Task, error) {
 	}
 
 	return task, nil
+}
+
+func (a *AsanaClient) UpdateTask(task *model.Task) error {
+	update := &asana.UpdateTaskRequest{
+		TaskBase: asana.TaskBase{
+			Name:  task.Name,
+			Notes: task.Description,
+			DueAt: task.DueAt,
+		},
+	}
+
+	asanaTask := &asana.Task{ID: task.ID}
+	return asanaTask.Update(a.c, update)
 }

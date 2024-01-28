@@ -19,6 +19,7 @@ type Service interface {
 	MarkAsDone(taskID, summary string) error
 	SelectGoal(manualTaskID string, dueAt *time.Time) (*model.Task, error)
 	Reopen(taskID, summary string) error
+	Update(task *model.Task) error
 }
 
 type svc struct {
@@ -70,6 +71,10 @@ func (r *svc) SelectGoal(manualTaskID string, dueAt *time.Time) (*model.Task, er
 
 func (r *svc) Reopen(taskID, summary string) error {
 	return r.storage.Reopen(taskID, summary)
+}
+
+func (r *svc) Update(task *model.Task) error {
+	return r.storage.Update(task)
 }
 
 func (r *svc) selectRndTask() (*model.Task, error) {
