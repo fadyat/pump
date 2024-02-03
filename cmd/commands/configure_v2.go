@@ -11,6 +11,18 @@ import (
 )
 
 const (
+	configureShort = "Configure Pump"
+
+	configureExample = `  pump configure
+
+  // backup previous config and create a new one
+  pump configure --backup
+
+  // restore from backup
+  pump configure --from-backup`
+)
+
+const (
 	defaultPrompt                    = "? "
 	defaultAsanaTokenPlaceholder     = "asana-token"
 	defaultAsanaProjectIdPlaceholder = "asana-project-id"
@@ -107,9 +119,11 @@ func Configure(config *internal.Config) *cobra.Command {
 	)
 
 	cmd := &cobra.Command{
-		Use:     "configure",
-		Short:   "Configure pump",
-		Aliases: []string{"config", "conf", "cfg"},
+		Use:                   "configure_v2",
+		DisableFlagsInUseLine: true,
+		SilenceUsage:          true,
+		Short:                 configureShort,
+		Example:               configureExample,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if fromBackup {
 				return pkg.RestoreJson(config.ConfigPath)
@@ -136,7 +150,6 @@ func Configure(config *internal.Config) *cobra.Command {
 				DriverOpts: driverOptions,
 			})
 		},
-		SilenceUsage: true,
 	}
 
 	cmd.Flags().BoolVar(&backup, "backup", true, "backup existing config file")

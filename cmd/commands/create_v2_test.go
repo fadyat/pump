@@ -31,7 +31,7 @@ func prepareCommand(cmd *cobra.Command, args []string) *bytes.Buffer {
 	return out
 }
 
-func TestCreateTask_V2(t *testing.T) {
+func TestCreateTaskV2(t *testing.T) {
 	cases := []struct {
 		name       string
 		config     *internal.Config
