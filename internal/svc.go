@@ -13,7 +13,7 @@ var (
 	ErrTaskNotFound = errors.New("task not found")
 )
 
-//go:generate mockery --name=IService --output=../mocks --filename=svc.go
+//go:generate ../.tools/.bin/mockery --name=IService --output=../mocks --filename=svc.go
 type IService interface {
 	Get(f *flags.GetFlags) ([]*model.Task, error)
 	GetByID(taskID string) (*model.Task, error)
