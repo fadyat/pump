@@ -9,6 +9,7 @@ var (
 	availableCommands = map[string]map[string]bool{
 		driver.AsanaDriver: {
 			"create": true,
+			"get":    true,
 		},
 	}
 )

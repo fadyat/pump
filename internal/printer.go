@@ -2,6 +2,7 @@ package internal
 
 import (
 	"fmt"
+	"io"
 	"strconv"
 	"strings"
 )
@@ -11,14 +12,17 @@ type Printer interface {
 }
 
 type tablePrinter struct {
+	out     io.Writer
 	headers []string
 }
 
 func NewTablePrinter(
+	out io.Writer,
 	headers ...string,
 ) Printer {
 	return &tablePrinter{
 		headers: headers,
+		out:     out,
 	}
 }
 
@@ -36,7 +40,7 @@ func (p *tablePrinter) Print(values [][]string) {
 	}
 
 	for _, row := range tableRows {
-		fmt.Println(row)
+		_, _ = fmt.Fprintln(p.out, row)
 	}
 }
 
@@ -70,6 +74,19 @@ func toAny[T any](val []T) []any {
 	var result = make([]any, len(val))
 	for idx, value := range val {
 		result[idx] = value
+	}
+
+	return result
+}
+
+type Printable interface {
+	ToPrintable() []string
+}
+
+func AsPrintable[T Printable](val []T) [][]string {
+	var result = make([][]string, len(val))
+	for idx, value := range val {
+		result[idx] = value.ToPrintable()
 	}
 
 	return result

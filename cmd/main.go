@@ -36,7 +36,6 @@ func main() {
 	}
 
 	pump.AddCommand(commands.Configure(config))
-	pump.AddCommand(commands.GetAvailableTask(config))
 	pump.AddCommand(commands.MarkTaskAsDone(config))
 	pump.AddCommand(commands.SelectTask(config))
 	pump.AddCommand(commands.BrowseTask(config))
@@ -56,6 +55,7 @@ func main() {
 	})
 
 	pump.AddCommand(commands.CreateTaskV2(manager))
+	pump.AddCommand(commands.GetTaskV2(manager))
 
 	_ = pump.Execute()
 }
