@@ -20,7 +20,7 @@ func (a *Asana) Get(f *flags.GetFlags) ([]*model.Task, error) {
 	var tasks = make([]*model.Task, 0, len(tasksAsana))
 	for _, taskAsana := range tasksAsana {
 		task := model.FromAsanaTask(taskAsana)
-		if a.takeByActive(f.OnlyActive, task) {
+		if a.byActive(f.OnlyActive, task) && a.byInactive(f.OnlyInactive, task) {
 			tasks = append(tasks, task)
 		}
 	}
@@ -28,7 +28,15 @@ func (a *Asana) Get(f *flags.GetFlags) ([]*model.Task, error) {
 	return tasks, nil
 }
 
-func (a *Asana) takeByActive(active bool, task *model.Task) bool {
+func (a *Asana) byInactive(inactive bool, task *model.Task) bool {
+	if inactive {
+		return task.DueAt == nil
+	}
+
+	return true
+}
+
+func (a *Asana) byActive(active bool, task *model.Task) bool {
 	if active {
 		return task.DueAt != nil
 	}

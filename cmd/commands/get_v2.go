@@ -52,6 +52,8 @@ func GetTaskV2(m *Manager) *cobra.Command {
 	}
 
 	cmd.Flags().BoolVarP(&f.OnlyActive, "active", "a", f.OnlyActive, "Show only active tasks")
+	cmd.Flags().BoolVarP(&f.OnlyInactive, "inactive", "i", f.OnlyInactive, "Show only inactive tasks")
+	cmd.MarkFlagsMutuallyExclusive("active", "inactive")
 
 	return cmd
 }

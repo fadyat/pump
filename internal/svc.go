@@ -80,7 +80,10 @@ func (r *svc) Update(task *model.Task) error {
 }
 
 func (r *svc) selectRndTask() (*model.Task, error) {
-	tasks, err := r.storage.Get(flags.NewGetFlags())
+	f := flags.NewGetFlags()
+	f.OnlyInactive = true
+
+	tasks, err := r.storage.Get(f)
 	if err != nil {
 		return nil, err
 	}
