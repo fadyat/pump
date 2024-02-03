@@ -35,9 +35,6 @@ func main() {
 		Short: "Pump is a CLI application for choosing tasks to work on",
 	}
 
-	pump.AddCommand(commands.Configure(config))
-
-	pump.AddCommand(commands.SelectTask(config))
 	pump.AddCommand(&cobra.Command{
 		Use:   "version",
 		Short: "Print the version number of Pump",
@@ -56,11 +53,13 @@ func main() {
 		pkg.RunCmd,
 	)
 
+	pump.AddCommand(commands.ConfigureV2(manager))
 	pump.AddCommand(commands.CreateTaskV2(manager))
 	pump.AddCommand(commands.GetTaskV2(manager))
 	pump.AddCommand(commands.BrowseTaskV2(manager))
 	pump.AddCommand(commands.CompleteTaskV2(manager))
 	pump.AddCommand(commands.EditTaskV2(manager))
+	pump.AddCommand(commands.SelectTaskV2(manager))
 
 	_ = pump.Execute()
 }
