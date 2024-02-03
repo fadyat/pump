@@ -38,7 +38,6 @@ func main() {
 	pump.AddCommand(commands.Configure(config))
 
 	pump.AddCommand(commands.SelectTask(config))
-	pump.AddCommand(commands.DescribeTask(config))
 	pump.AddCommand(&cobra.Command{
 		Use:   "version",
 		Short: "Print the version number of Pump",
@@ -61,6 +60,7 @@ func main() {
 	pump.AddCommand(commands.GetTaskV2(manager))
 	pump.AddCommand(commands.BrowseTaskV2(manager))
 	pump.AddCommand(commands.CompleteTaskV2(manager))
+	pump.AddCommand(commands.EditTaskV2(manager))
 
 	_ = pump.Execute()
 }
