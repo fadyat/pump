@@ -36,7 +36,7 @@ func main() {
 	}
 
 	pump.AddCommand(commands.Configure(config))
-	pump.AddCommand(commands.MarkTaskAsDone(config))
+
 	pump.AddCommand(commands.SelectTask(config))
 	pump.AddCommand(commands.DescribeTask(config))
 	pump.AddCommand(&cobra.Command{
@@ -60,6 +60,7 @@ func main() {
 	pump.AddCommand(commands.CreateTaskV2(manager))
 	pump.AddCommand(commands.GetTaskV2(manager))
 	pump.AddCommand(commands.BrowseTaskV2(manager))
+	pump.AddCommand(commands.CompleteTaskV2(manager))
 
 	_ = pump.Execute()
 }
