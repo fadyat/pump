@@ -120,9 +120,10 @@ func TestCreateTask_V2(t *testing.T) {
 			service := mocks.NewIService(t)
 			tc.applyMocks(service)
 
-			manager := commands.NewManager(tc.config, func() internal.IService {
-				return service
-			})
+			manager := &commands.Manager{
+				Config:       tc.config,
+				ServiceMaker: func() internal.IService { return service },
+			}
 			cmd := commands.CreateTaskV2(manager)
 			out := prepareCommand(cmd, tc.args)
 

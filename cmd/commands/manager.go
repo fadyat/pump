@@ -10,6 +10,7 @@ var (
 		driver.AsanaDriver: {
 			"create": true,
 			"get":    true,
+			"browse": true,
 		},
 	}
 )
@@ -26,15 +27,20 @@ type Manager struct {
 	// you will try to create a service instance, it will fail, because driver
 	// is not set yet.
 	ServiceMaker func() internal.IService
+
+	// RunCommand is a function that runs a command with the given arguments.
+	RunCommand func(cmd string, args ...string) error
 }
 
 func NewManager(
 	config *internal.Config,
 	serviceFn func() internal.IService,
+	runCmdFn func(cmd string, args ...string) error,
 ) *Manager {
 	return &Manager{
 		Config:       config,
 		ServiceMaker: serviceFn,
+		RunCommand:   runCmdFn,
 	}
 }
 

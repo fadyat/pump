@@ -38,7 +38,6 @@ func main() {
 	pump.AddCommand(commands.Configure(config))
 	pump.AddCommand(commands.MarkTaskAsDone(config))
 	pump.AddCommand(commands.SelectTask(config))
-	pump.AddCommand(commands.BrowseTask(config))
 	pump.AddCommand(commands.DescribeTask(config))
 	pump.AddCommand(&cobra.Command{
 		Use:   "version",
@@ -48,14 +47,19 @@ func main() {
 		},
 	})
 
-	manager := commands.NewManager(config, func() internal.IService {
-		// fixme: this will be fixed after switching to v2
-		d, _ := driver.New(config.Driver, config.GetDriverOpts())
-		return internal.NewSvc(d)
-	})
+	manager := commands.NewManager(
+		config,
+		func() internal.IService {
+			// fixme: this will be fixed after switching to v2
+			d, _ := driver.New(config.Driver, config.GetDriverOpts())
+			return internal.NewSvc(d)
+		},
+		pkg.RunCmd,
+	)
 
 	pump.AddCommand(commands.CreateTaskV2(manager))
 	pump.AddCommand(commands.GetTaskV2(manager))
+	pump.AddCommand(commands.BrowseTaskV2(manager))
 
 	_ = pump.Execute()
 }

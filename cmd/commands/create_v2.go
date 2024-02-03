@@ -33,6 +33,8 @@ func (f *CreateFlags) Prepare() {
 }
 
 func (f *CreateFlags) Validate() error {
+	f.Prepare()
+
 	if f.Name == "" {
 		return ErrTaskNameRequired
 	}
@@ -60,7 +62,6 @@ func CreateTaskV2(m *Manager) *cobra.Command {
 			}
 
 			flags.Override(args)
-			flags.Prepare()
 			return flags.Validate()
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
