@@ -5,7 +5,6 @@ import (
 	"github.com/fadyat/pump/internal"
 	"github.com/fadyat/pump/internal/driver"
 	"github.com/spf13/cobra"
-	"log/slog"
 	"strings"
 )
 
@@ -23,10 +22,6 @@ func MarkTaskAsDone(config *internal.Config) *cobra.Command {
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) == 0 {
 				return fmt.Errorf("task id is required")
-			}
-
-			if config.Driver != driver.AsanaDriver && summary != "" {
-				slog.Warn("summary is only supported by asana driver")
 			}
 
 			taskID = strings.TrimSpace(args[0])

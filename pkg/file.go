@@ -3,12 +3,7 @@ package pkg
 import (
 	"os"
 	"path/filepath"
-	"strings"
 )
-
-func GetDir(path string) string {
-	return path[:strings.LastIndex(path, "/")]
-}
 
 func RenameWithSuffix(path, suffix string) string {
 	var ext = filepath.Ext(path)

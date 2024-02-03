@@ -73,7 +73,6 @@ func newDriverSelectForm(d *string) *huh.Form {
 				Title("Select driver").
 				Options(
 					huh.NewOption("Asana", driver.AsanaDriver).Selected(true),
-					huh.NewOption("File system", driver.FileSystemDriver),
 				).
 				Value(d),
 		),
@@ -93,19 +92,9 @@ func selectAsanaDriverOptions(config *internal.Config) (map[string]any, error) {
 	return opts.Merge(storedOpts).ToMap(), nil
 }
 
-func selectFileSystemDriverOptions(config *internal.Config) (map[string]any, error) {
-	var opts = &options.FileSystemDriver{}
-
-	opts.TasksFile = pkg.GetDir(config.ConfigPath) + "/tasks.json"
-	return opts.ToMap(), nil
-}
-
 func runDriverOptionsSelection(config *internal.Config, d string) (map[string]any, error) {
-	switch d {
-	case driver.AsanaDriver:
+	if d == driver.AsanaDriver {
 		return selectAsanaDriverOptions(config)
-	case driver.FileSystemDriver:
-		return selectFileSystemDriverOptions(config)
 	}
 
 	return nil, errors.New("unsupported driver")

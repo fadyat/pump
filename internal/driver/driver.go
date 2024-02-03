@@ -7,11 +7,6 @@ import (
 	"time"
 )
 
-var (
-	ErrTaskAlreadyExists = errors.New("task already exists")
-	ErrTaskNotFound      = errors.New("task not found")
-)
-
 type Storage interface {
 	Get() ([]*model.Task, error)
 	GetByID(taskID string) (*model.Task, error)
@@ -23,22 +18,18 @@ type Storage interface {
 }
 
 const (
-	AsanaDriver      = "asana"
-	FileSystemDriver = "fs"
+	AsanaDriver = "asana"
 )
 
 func New(
 	driverType string,
 	storageOpts map[string]any,
 ) (Storage, error) {
-	switch driverType {
-	case AsanaDriver:
+	if driverType == AsanaDriver {
 		return NewAsana(api.NewAsanaClient(
 			storageOpts["token"].(string),
 			storageOpts["project"].(string),
 		)), nil
-	case FileSystemDriver:
-		return NewFs(storageOpts["file"].(string)), nil
 	}
 
 	return nil, errors.New("requested driver not found, run `pump configure`")
