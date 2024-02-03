@@ -71,7 +71,7 @@ func (f *SelectFlags) Prepare() {
 func (f *SelectFlags) Validate() error {
 	f.Prepare()
 
-	if slices.Index(getWorkIntervals(), f.WorkInterval) == -1 {
+	if slices.Contains(getWorkIntervals(), f.WorkInterval) {
 		return ErrInvalidWorkInterval
 	}
 
@@ -89,6 +89,10 @@ func SelectTaskV2(m *Manager) *cobra.Command {
 		Example:               selectExample,
 		Args:                  cobra.MaximumNArgs(1),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
+			if !m.IsCommandAvailable("select") {
+				return ErrCommandNotAvailable
+			}
+
 			flags.Override(args)
 			return flags.Validate()
 		},

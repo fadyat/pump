@@ -66,6 +66,10 @@ func CompleteTaskV2(m *Manager) *cobra.Command {
 		Example:               completeExample,
 		Args:                  cobra.MaximumNArgs(2),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
+			if !m.IsCommandAvailable("complete") {
+				return ErrCommandNotAvailable
+			}
+
 			flags.Override(args)
 			return flags.Validate()
 		},

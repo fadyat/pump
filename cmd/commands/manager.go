@@ -3,14 +3,15 @@ package commands
 import (
 	"github.com/fadyat/pump/internal"
 	"github.com/fadyat/pump/internal/driver"
+	"slices"
 )
 
 var (
-	availableCommands = map[string]map[string]bool{
+	availableCommands = map[string][]string{
 		driver.AsanaDriver: {
-			"create": true,
-			"get":    true,
-			"browse": true,
+			"create", "get", "browse",
+			"select", "edit", "configure",
+			"complete",
 		},
 	}
 )
@@ -50,6 +51,5 @@ func (m *Manager) IsCommandAvailable(cmd string) bool {
 		return false
 	}
 
-	_, supported = commands[cmd]
-	return supported
+	return slices.Contains(commands, cmd)
 }

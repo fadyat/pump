@@ -54,6 +54,10 @@ func EditTaskV2(m *Manager) *cobra.Command {
 		Example:               editExample,
 		Args:                  cobra.MaximumNArgs(1),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
+			if !m.IsCommandAvailable("edit") {
+				return ErrCommandNotAvailable
+			}
+
 			flags.Override(args)
 			return flags.Validate()
 		},
