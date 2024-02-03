@@ -9,7 +9,7 @@ import (
 )
 
 // todo: reuse this function in other commands
-func newService(cfg *internal.Config) (internal.Service, error) {
+func newService(cfg *internal.Config) (internal.IService, error) {
 	d, err := driver.New(cfg.Driver, cfg.GetDriverOpts())
 	if err != nil {
 		return nil, err

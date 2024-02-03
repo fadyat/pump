@@ -12,7 +12,8 @@ var (
 	ErrTaskNotFound = errors.New("task not found")
 )
 
-type Service interface {
+//go:generate mockery --name=IService --output=../mocks --filename=svc.go
+type IService interface {
 	Get() ([]*model.Task, error)
 	GetByID(taskID string) (*model.Task, error)
 	Create(taskName string) error
@@ -26,7 +27,7 @@ type svc struct {
 	storage driver.Storage
 }
 
-func NewSvc(storage driver.Storage) Service {
+func NewSvc(storage driver.Storage) IService {
 	return &svc{storage: storage}
 }
 

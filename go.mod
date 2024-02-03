@@ -6,6 +6,7 @@ require (
 	bitbucket.org/mikehouston/asana-go v0.0.0-20221230134324-ca4a5f164c12
 	github.com/charmbracelet/huh v0.2.1
 	github.com/spf13/cobra v1.8.0
+	github.com/stretchr/testify v1.7.0
 )
 
 require (
@@ -19,6 +20,7 @@ require (
 	github.com/charmbracelet/glamour v0.6.0 // indirect
 	github.com/charmbracelet/lipgloss v0.9.1 // indirect
 	github.com/containerd/console v1.0.4-0.20230313162750-1ae8d489ac81 // indirect
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dlclark/regexp2 v1.10.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
@@ -36,9 +38,11 @@ require (
 	github.com/muesli/termenv v0.15.2 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rivo/uniseg v0.4.4 // indirect
 	github.com/rs/xid v1.4.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
+	github.com/stretchr/objx v0.1.0 // indirect
 	github.com/yuin/goldmark v1.6.0 // indirect
 	github.com/yuin/goldmark-emoji v1.0.2 // indirect
 	golang.org/x/net v0.17.0 // indirect
@@ -49,4 +53,5 @@ require (
 	golang.org/x/text v0.13.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

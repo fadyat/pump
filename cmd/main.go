@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/fadyat/pump/cmd/commands"
 	"github.com/fadyat/pump/internal"
+	"github.com/fadyat/pump/internal/driver"
 	"github.com/fadyat/pump/pkg"
 	"github.com/spf13/cobra"
 	"log"
@@ -36,7 +37,6 @@ func main() {
 
 	pump.AddCommand(commands.Configure(config))
 	pump.AddCommand(commands.GetAvailableTask(config))
-	pump.AddCommand(commands.AddTask(config))
 	pump.AddCommand(commands.MarkTaskAsDone(config))
 	pump.AddCommand(commands.SelectTask(config))
 	pump.AddCommand(commands.BrowseTask(config))
@@ -48,6 +48,14 @@ func main() {
 			cmd.Println("Pump version:", Version)
 		},
 	})
+
+	manager := commands.NewManager(config, func() internal.IService {
+		// fixme: this will be fixed after switching to v2
+		d, _ := driver.New(config.Driver, config.GetDriverOpts())
+		return internal.NewSvc(d)
+	})
+
+	pump.AddCommand(commands.CreateTaskV2(manager))
 
 	_ = pump.Execute()
 }
