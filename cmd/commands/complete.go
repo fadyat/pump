@@ -25,7 +25,7 @@ func MarkTaskAsDone(config *internal.Config) *cobra.Command {
 				return fmt.Errorf("task id is required")
 			}
 
-			if config.Driver != "asana" && summary != "" {
+			if config.Driver != driver.AsanaDriver && summary != "" {
 				slog.Warn("summary is only supported by asana driver")
 			}
 

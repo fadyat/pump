@@ -49,7 +49,7 @@ func DescribeTask(cfg *internal.Config) *cobra.Command {
 			return autoCompleteArgs(tasks, idTaker), cobra.ShellCompDirectiveNoFileComp
 		},
 		PreRunE: func(cmd *cobra.Command, args []string) error {
-			if cfg.Driver != "asana" {
+			if cfg.Driver != driver.AsanaDriver {
 				return fmt.Errorf("asana driver is only supported")
 			}
 

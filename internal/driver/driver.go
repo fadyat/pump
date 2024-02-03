@@ -22,17 +22,22 @@ type Storage interface {
 	Update(task *model.Task) error
 }
 
+const (
+	AsanaDriver      = "asana"
+	FileSystemDriver = "fs"
+)
+
 func New(
 	driverType string,
 	storageOpts map[string]any,
 ) (Storage, error) {
 	switch driverType {
-	case "asana":
+	case AsanaDriver:
 		return NewAsana(api.NewAsanaClient(
 			storageOpts["token"].(string),
 			storageOpts["project"].(string),
 		)), nil
-	case "fs":
+	case FileSystemDriver:
 		return NewFs(storageOpts["file"].(string)), nil
 	}
 

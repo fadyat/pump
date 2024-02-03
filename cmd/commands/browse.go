@@ -3,6 +3,7 @@ package commands
 import (
 	"fmt"
 	"github.com/fadyat/pump/internal"
+	"github.com/fadyat/pump/internal/driver"
 	"github.com/fadyat/pump/internal/driver/options"
 	"github.com/fadyat/pump/pkg"
 	"github.com/spf13/cobra"
@@ -17,7 +18,7 @@ func BrowseTask(cfg *internal.Config) *cobra.Command {
 		Short:   "Browse project/specified task",
 		Aliases: []string{"info", "open", "view"},
 		PreRunE: func(cmd *cobra.Command, args []string) error {
-			if cfg.Driver != "asana" {
+			if cfg.Driver != driver.AsanaDriver {
 				return fmt.Errorf("asana driver is only supported")
 			}
 

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/charmbracelet/huh"
 	"github.com/fadyat/pump/internal"
+	"github.com/fadyat/pump/internal/driver"
 	"github.com/fadyat/pump/internal/driver/options"
 	"github.com/fadyat/pump/pkg"
 	"github.com/spf13/cobra"
@@ -65,16 +66,16 @@ func newAsanaDriverForm(opts, storedOpts *options.AsanaDriver) *huh.Form {
 	)
 }
 
-func newDriverSelectForm(driver *string) *huh.Form {
+func newDriverSelectForm(d *string) *huh.Form {
 	return huh.NewForm(
 		huh.NewGroup(
 			huh.NewSelect[string]().
 				Title("Select driver").
 				Options(
-					huh.NewOption("Asana", "asana").Selected(true),
-					huh.NewOption("File system", "fs"),
+					huh.NewOption("Asana", driver.AsanaDriver).Selected(true),
+					huh.NewOption("File system", driver.FileSystemDriver),
 				).
-				Value(driver),
+				Value(d),
 		),
 	)
 }
@@ -99,11 +100,11 @@ func selectFileSystemDriverOptions(config *internal.Config) (map[string]any, err
 	return opts.ToMap(), nil
 }
 
-func runDriverOptionsSelection(config *internal.Config, driver string) (map[string]any, error) {
-	switch driver {
-	case "asana":
+func runDriverOptionsSelection(config *internal.Config, d string) (map[string]any, error) {
+	switch d {
+	case driver.AsanaDriver:
 		return selectAsanaDriverOptions(config)
-	case "fs":
+	case driver.FileSystemDriver:
 		return selectFileSystemDriverOptions(config)
 	}
 
@@ -125,12 +126,12 @@ func Configure(config *internal.Config) *cobra.Command {
 				return pkg.RestoreJson(config.ConfigPath)
 			}
 
-			var driver string
-			if err := newDriverSelectForm(&driver).Run(); err != nil {
+			var d string
+			if err := newDriverSelectForm(&d).Run(); err != nil {
 				return err
 			}
 
-			driverOptions, err := runDriverOptionsSelection(config, driver)
+			driverOptions, err := runDriverOptionsSelection(config, d)
 			if err != nil {
 				return err
 			}
@@ -142,7 +143,7 @@ func Configure(config *internal.Config) *cobra.Command {
 			}
 
 			return pkg.WriteJson(config.ConfigPath, internal.Config{
-				Driver:     driver,
+				Driver:     d,
 				DriverOpts: driverOptions,
 			})
 		},
