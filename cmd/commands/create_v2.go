@@ -2,12 +2,11 @@ package commands
 
 import (
 	"errors"
+	"github.com/fadyat/pump/cmd/flags"
 	"github.com/spf13/cobra"
-	"strings"
 )
 
 var (
-	ErrTaskNameRequired    = errors.New("task name is required")
 	ErrCommandNotAvailable = errors.New("command not available for the current driver")
 )
 
@@ -18,36 +17,8 @@ const (
   pump create "Task name"`
 )
 
-type CreateFlags struct {
-	Name string
-}
-
-func (f *CreateFlags) Override(args []string) {
-	if len(args) > 0 {
-		f.Name = args[0]
-	}
-}
-
-func (f *CreateFlags) Prepare() {
-	f.Name = strings.TrimSpace(f.Name)
-}
-
-func (f *CreateFlags) Validate() error {
-	f.Prepare()
-
-	if f.Name == "" {
-		return ErrTaskNameRequired
-	}
-
-	return nil
-}
-
-func NewCreateFlags() *CreateFlags {
-	return &CreateFlags{}
-}
-
 func CreateTaskV2(m *Manager) *cobra.Command {
-	var flags = NewCreateFlags()
+	var f = flags.NewCreateFlags()
 
 	cmd := &cobra.Command{
 		Use:                   "create_v2 (-n NAME)",
@@ -61,11 +32,11 @@ func CreateTaskV2(m *Manager) *cobra.Command {
 				return ErrCommandNotAvailable
 			}
 
-			flags.Override(args)
-			return flags.Validate()
+			f.Override(args)
+			return f.Validate()
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if err := m.ServiceMaker().Create(flags.Name); err != nil {
+			if err := m.ServiceMaker().Create(f); err != nil {
 				return err
 			}
 
@@ -74,7 +45,8 @@ func CreateTaskV2(m *Manager) *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVarP(&flags.Name, "name", "n", flags.Name, "Task name")
+	cmd.Flags().StringVarP(&f.Name, "name", "n", f.Name, "Task name")
+	cmd.Flags().StringVarP(&f.Description, "description", "d", f.Description, "Task description")
 
 	return cmd
 }

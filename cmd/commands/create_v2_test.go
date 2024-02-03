@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"github.com/fadyat/pump/cmd/commands"
+	"github.com/fadyat/pump/cmd/flags"
 	"github.com/fadyat/pump/internal"
 	"github.com/fadyat/pump/mocks"
 	"github.com/spf13/cobra"
@@ -20,6 +21,9 @@ var (
 			"token":   "asana_token",
 			"project": "asana_project",
 		},
+	}
+	createFlags = &flags.CreateFlags{
+		Name: "Task name",
 	}
 )
 
@@ -44,7 +48,7 @@ func TestCreateTaskV2(t *testing.T) {
 			name:   "create via name flag",
 			config: asanaConfig,
 			applyMocks: func(service *mocks.IService) {
-				service.On("Create", "Task name").
+				service.On("Create", createFlags).
 					Return(nil).
 					Once()
 			},
@@ -56,7 +60,7 @@ func TestCreateTaskV2(t *testing.T) {
 			name:   "create via positional argument",
 			config: asanaConfig,
 			applyMocks: func(service *mocks.IService) {
-				service.On("Create", "Task name").
+				service.On("Create", createFlags).
 					Return(nil).
 					Once()
 			},
@@ -104,7 +108,7 @@ func TestCreateTaskV2(t *testing.T) {
 			name:   "create with service error",
 			config: asanaConfig,
 			applyMocks: func(service *mocks.IService) {
-				service.On("Create", "Task name").
+				service.On("Create", createFlags).
 					Return(errors.New("service error")).
 					Once()
 			},

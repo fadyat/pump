@@ -17,13 +17,13 @@ type IService struct {
 	mock.Mock
 }
 
-// Create provides a mock function with given fields: taskName
-func (_m *IService) Create(taskName string) error {
-	ret := _m.Called(taskName)
+// Create provides a mock function with given fields: f
+func (_m *IService) Create(f *flags.CreateFlags) error {
+	ret := _m.Called(f)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(string) error); ok {
-		r0 = rf(taskName)
+	if rf, ok := ret.Get(0).(func(*flags.CreateFlags) error); ok {
+		r0 = rf(f)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -31,17 +31,17 @@ func (_m *IService) Create(taskName string) error {
 	return r0
 }
 
-// Get provides a mock function with given fields: _a0
-func (_m *IService) Get(_a0 *flags.GetFlags) ([]*model.Task, error) {
-	ret := _m.Called(_a0)
+// Get provides a mock function with given fields: f
+func (_m *IService) Get(f *flags.GetFlags) ([]*model.Task, error) {
+	ret := _m.Called(f)
 
 	var r0 []*model.Task
 	var r1 error
 	if rf, ok := ret.Get(0).(func(*flags.GetFlags) ([]*model.Task, error)); ok {
-		return rf(_a0)
+		return rf(f)
 	}
 	if rf, ok := ret.Get(0).(func(*flags.GetFlags) []*model.Task); ok {
-		r0 = rf(_a0)
+		r0 = rf(f)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]*model.Task)
@@ -49,7 +49,7 @@ func (_m *IService) Get(_a0 *flags.GetFlags) ([]*model.Task, error) {
 	}
 
 	if rf, ok := ret.Get(1).(func(*flags.GetFlags) error); ok {
-		r1 = rf(_a0)
+		r1 = rf(f)
 	} else {
 		r1 = ret.Error(1)
 	}

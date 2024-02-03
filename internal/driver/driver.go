@@ -11,7 +11,7 @@ import (
 type Storage interface {
 	Get(f *flags.GetFlags) ([]*model.Task, error)
 	GetByID(taskID string) (*model.Task, error)
-	Create(taskName string) error
+	Create(f *flags.CreateFlags) error
 	SetDueDate(taskID string, dueAt *time.Time) error
 	MarkAsDone(taskID, summary string) error
 	Reopen(taskID, summary string) error

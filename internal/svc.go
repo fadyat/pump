@@ -15,9 +15,9 @@ var (
 
 //go:generate mockery --name=IService --output=../mocks --filename=svc.go
 type IService interface {
-	Get(flags *flags.GetFlags) ([]*model.Task, error)
+	Get(f *flags.GetFlags) ([]*model.Task, error)
 	GetByID(taskID string) (*model.Task, error)
-	Create(taskName string) error
+	Create(f *flags.CreateFlags) error
 	MarkAsDone(taskID, summary string) error
 	SelectGoal(manualTaskID string, dueAt *time.Time) (*model.Task, error)
 	Reopen(taskID, summary string) error
@@ -40,8 +40,8 @@ func (r *svc) GetByID(taskID string) (*model.Task, error) {
 	return r.storage.GetByID(taskID)
 }
 
-func (r *svc) Create(taskName string) error {
-	return r.storage.Create(taskName)
+func (r *svc) Create(f *flags.CreateFlags) error {
+	return r.storage.Create(f)
 }
 
 func (r *svc) MarkAsDone(taskID, summary string) error {

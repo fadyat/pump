@@ -45,8 +45,8 @@ func (a *Asana) GetByID(taskID string) (*model.Task, error) {
 	return model.FromAsanaTask(taskAsana), nil
 }
 
-func (a *Asana) Create(taskName string) error {
-	return a.c.CreateTask(taskName)
+func (a *Asana) Create(f *flags.CreateFlags) error {
+	return a.c.CreateTask(f.Name, f.Description)
 }
 
 func (a *Asana) MarkAsDone(taskID, summary string) error {
