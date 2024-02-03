@@ -1,6 +1,7 @@
 package driver
 
 import (
+	"github.com/fadyat/pump/cmd/flags"
 	"github.com/fadyat/pump/internal/api"
 	"github.com/fadyat/pump/internal/model"
 	"time"
@@ -10,7 +11,7 @@ type Asana struct {
 	c *api.AsanaClient
 }
 
-func (a *Asana) Get() ([]*model.Task, error) {
+func (a *Asana) Get(f *flags.GetFlags) ([]*model.Task, error) {
 	tasksAsana, err := a.c.GetTasks()
 	if err != nil {
 		return nil, err
@@ -18,10 +19,21 @@ func (a *Asana) Get() ([]*model.Task, error) {
 
 	var tasks = make([]*model.Task, 0, len(tasksAsana))
 	for _, taskAsana := range tasksAsana {
-		tasks = append(tasks, model.FromAsanaTask(taskAsana))
+		task := model.FromAsanaTask(taskAsana)
+		if a.takeByActive(f.OnlyActive, task) {
+			tasks = append(tasks, task)
+		}
 	}
 
 	return tasks, nil
+}
+
+func (a *Asana) takeByActive(active bool, task *model.Task) bool {
+	if active {
+		return task.DueAt != nil
+	}
+
+	return true
 }
 
 func (a *Asana) GetByID(taskID string) (*model.Task, error) {

@@ -2,13 +2,14 @@ package driver
 
 import (
 	"errors"
+	"github.com/fadyat/pump/cmd/flags"
 	"github.com/fadyat/pump/internal/api"
 	"github.com/fadyat/pump/internal/model"
 	"time"
 )
 
 type Storage interface {
-	Get() ([]*model.Task, error)
+	Get(f *flags.GetFlags) ([]*model.Task, error)
 	GetByID(taskID string) (*model.Task, error)
 	Create(taskName string) error
 	SetDueDate(taskID string, dueAt *time.Time) error

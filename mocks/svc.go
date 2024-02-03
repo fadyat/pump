@@ -3,8 +3,11 @@
 package mocks
 
 import (
-	model "github.com/fadyat/pump/internal/model"
+	flags "github.com/fadyat/pump/cmd/flags"
+
 	mock "github.com/stretchr/testify/mock"
+
+	model "github.com/fadyat/pump/internal/model"
 
 	time "time"
 )
@@ -28,25 +31,25 @@ func (_m *IService) Create(taskName string) error {
 	return r0
 }
 
-// Get provides a mock function with given fields:
-func (_m *IService) Get() ([]*model.Task, error) {
-	ret := _m.Called()
+// Get provides a mock function with given fields: _a0
+func (_m *IService) Get(_a0 *flags.GetFlags) ([]*model.Task, error) {
+	ret := _m.Called(_a0)
 
 	var r0 []*model.Task
 	var r1 error
-	if rf, ok := ret.Get(0).(func() ([]*model.Task, error)); ok {
-		return rf()
+	if rf, ok := ret.Get(0).(func(*flags.GetFlags) ([]*model.Task, error)); ok {
+		return rf(_a0)
 	}
-	if rf, ok := ret.Get(0).(func() []*model.Task); ok {
-		r0 = rf()
+	if rf, ok := ret.Get(0).(func(*flags.GetFlags) []*model.Task); ok {
+		r0 = rf(_a0)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]*model.Task)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func() error); ok {
-		r1 = rf()
+	if rf, ok := ret.Get(1).(func(*flags.GetFlags) error); ok {
+		r1 = rf(_a0)
 	} else {
 		r1 = ret.Error(1)
 	}

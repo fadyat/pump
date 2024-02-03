@@ -2,6 +2,7 @@ package internal
 
 import (
 	"errors"
+	"github.com/fadyat/pump/cmd/flags"
 	"github.com/fadyat/pump/internal/driver"
 	"github.com/fadyat/pump/internal/model"
 	"github.com/fadyat/pump/pkg"
@@ -14,7 +15,7 @@ var (
 
 //go:generate mockery --name=IService --output=../mocks --filename=svc.go
 type IService interface {
-	Get() ([]*model.Task, error)
+	Get(flags *flags.GetFlags) ([]*model.Task, error)
 	GetByID(taskID string) (*model.Task, error)
 	Create(taskName string) error
 	MarkAsDone(taskID, summary string) error
@@ -31,8 +32,8 @@ func NewSvc(storage driver.Storage) IService {
 	return &svc{storage: storage}
 }
 
-func (r *svc) Get() ([]*model.Task, error) {
-	return r.storage.Get()
+func (r *svc) Get(f *flags.GetFlags) ([]*model.Task, error) {
+	return r.storage.Get(f)
 }
 
 func (r *svc) GetByID(taskID string) (*model.Task, error) {
@@ -79,7 +80,7 @@ func (r *svc) Update(task *model.Task) error {
 }
 
 func (r *svc) selectRndTask() (*model.Task, error) {
-	tasks, err := r.storage.Get()
+	tasks, err := r.storage.Get(flags.NewGetFlags())
 	if err != nil {
 		return nil, err
 	}

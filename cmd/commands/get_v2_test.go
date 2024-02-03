@@ -3,6 +3,7 @@ package commands_test
 import (
 	"errors"
 	"github.com/fadyat/pump/cmd/commands"
+	"github.com/fadyat/pump/cmd/flags"
 	"github.com/fadyat/pump/internal"
 	"github.com/fadyat/pump/internal/model"
 	"github.com/fadyat/pump/mocks"
@@ -16,6 +17,7 @@ import (
 
 var (
 	fixedTime = time.Date(2021, time.January, 1, 0, 0, 0, 0, time.UTC)
+	getFlags  = &flags.GetFlags{}
 )
 
 func TestGetTaskV2(t *testing.T) {
@@ -42,7 +44,7 @@ func TestGetTaskV2(t *testing.T) {
 			name:   "get tasks",
 			config: asanaConfig,
 			applyMocks: func(service *mocks.IService) {
-				service.On("Get").
+				service.On("Get", getFlags).
 					Return([]*model.Task{{
 						ID:        "1",
 						Name:      "Task 1",
@@ -58,7 +60,7 @@ func TestGetTaskV2(t *testing.T) {
 			name:   "no tasks found",
 			config: asanaConfig,
 			applyMocks: func(service *mocks.IService) {
-				service.On("Get").
+				service.On("Get", getFlags).
 					Return([]*model.Task{}, nil).
 					Once()
 			},
@@ -70,7 +72,7 @@ func TestGetTaskV2(t *testing.T) {
 			name:   "get tasks error",
 			config: asanaConfig,
 			applyMocks: func(service *mocks.IService) {
-				service.On("Get").
+				service.On("Get", getFlags).
 					Return(nil, errors.New("service error")).
 					Once()
 			},

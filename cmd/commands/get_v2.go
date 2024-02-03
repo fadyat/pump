@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"github.com/fadyat/pump/cmd/flags"
 	"github.com/fadyat/pump/internal"
 	"github.com/spf13/cobra"
 )
@@ -12,7 +13,9 @@ const (
 )
 
 func GetTaskV2(m *Manager) *cobra.Command {
-	return &cobra.Command{
+	var f = flags.NewGetFlags()
+
+	cmd := &cobra.Command{
 		Use:                   "get_v2",
 		DisableFlagsInUseLine: true,
 		SilenceUsage:          true,
@@ -32,7 +35,7 @@ func GetTaskV2(m *Manager) *cobra.Command {
 				"id", "name", "created at", "due at",
 			)
 
-			tasks, err := m.ServiceMaker().Get()
+			tasks, err := m.ServiceMaker().Get(f)
 			if err != nil {
 				return err
 			}
@@ -48,4 +51,7 @@ func GetTaskV2(m *Manager) *cobra.Command {
 		},
 	}
 
+	cmd.Flags().BoolVarP(&f.OnlyActive, "active", "a", f.OnlyActive, "Show only active tasks")
+
+	return cmd
 }
