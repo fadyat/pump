@@ -20,7 +20,7 @@ var (
 	getFlags  = &flags.GetFlags{}
 )
 
-func TestGetTaskV2(t *testing.T) {
+func TestGetTask(t *testing.T) {
 	cases := []struct {
 		name       string
 		config     *internal.Config
@@ -92,7 +92,7 @@ func TestGetTaskV2(t *testing.T) {
 				Config:       tc.config,
 				ServiceMaker: func() internal.IService { return service },
 			}
-			cmd := commands.GetTaskV2(manager)
+			cmd := commands.GetTask(manager)
 			out := prepareCommand(cmd, tc.args)
 
 			tc.wantErr(t, cmd.Execute())

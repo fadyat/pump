@@ -112,25 +112,18 @@ func runDriverOptionsSelection(config *internal.Config, d string) (map[string]an
 	return nil, errors.New("unsupported driver")
 }
 
-func ConfigureV2(m *Manager) *cobra.Command {
+func Configure(m *Manager) *cobra.Command {
 	var (
 		backup     bool
 		fromBackup bool
 	)
 
 	cmd := &cobra.Command{
-		Use:                   "configure_v2",
+		Use:                   "configure",
 		DisableFlagsInUseLine: true,
 		SilenceUsage:          true,
 		Short:                 configureShort,
 		Example:               configureExample,
-		PreRunE: func(cmd *cobra.Command, args []string) error {
-			if !m.IsCommandAvailable("configure") {
-				return ErrCommandNotAvailable
-			}
-
-			return nil
-		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if fromBackup {
 				return pkg.RestoreJson(m.Config.ConfigPath)

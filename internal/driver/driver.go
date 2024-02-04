@@ -1,7 +1,6 @@
 package driver
 
 import (
-	"errors"
 	"github.com/fadyat/pump/cmd/flags"
 	"github.com/fadyat/pump/internal/api"
 	"github.com/fadyat/pump/internal/model"
@@ -25,13 +24,13 @@ const (
 func New(
 	driverType string,
 	storageOpts map[string]any,
-) (Storage, error) {
+) Storage {
 	if driverType == AsanaDriver {
 		return NewAsana(api.NewAsanaClient(
 			storageOpts["token"].(string),
 			storageOpts["project"].(string),
-		)), nil
+		))
 	}
 
-	return nil, errors.New("requested driver not found, run `pump configure`")
+	return nil
 }

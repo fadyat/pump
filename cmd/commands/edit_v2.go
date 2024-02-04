@@ -40,14 +40,14 @@ func (f *EditFlags) Validate() error {
 	return nil
 }
 
-func EditTaskV2(m *Manager) *cobra.Command {
+func EditTask(m *Manager) *cobra.Command {
 	var (
 		flags  = NewEditFlags()
 		editor = internal.NewEditor("Name", "Description")
 	)
 
 	cmd := &cobra.Command{
-		Use:                   "edit_v2 (-t TASK_ID)",
+		Use:                   "edit (-t TASK_ID)",
 		DisableFlagsInUseLine: true,
 		SilenceUsage:          true,
 		Short:                 editShort,

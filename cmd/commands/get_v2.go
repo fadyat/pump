@@ -12,11 +12,11 @@ const (
 	getExample = `  pump get`
 )
 
-func GetTaskV2(m *Manager) *cobra.Command {
+func GetTask(m *Manager) *cobra.Command {
 	var f = flags.NewGetFlags()
 
 	cmd := &cobra.Command{
-		Use:                   "get_v2",
+		Use:                   "get",
 		DisableFlagsInUseLine: true,
 		SilenceUsage:          true,
 		Short:                 getShort,

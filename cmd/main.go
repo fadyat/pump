@@ -10,16 +10,26 @@ import (
 )
 
 var (
+
+	// Version is changed via ldflags
 	Version = "dev"
 )
 
-func withConfig() *internal.Config {
+func getConfigPath() string {
+	if Version == "dev" {
+		return ".pump/config.json"
+	}
+
 	configPath, err := pkg.HomeDirConfig("config.json")
 	if err != nil {
 		log.Fatalf("failed to get home directory: %v", err)
 	}
 
-	config, err := internal.NewConfig(configPath)
+	return configPath
+}
+
+func withConfig() *internal.Config {
+	config, err := internal.NewConfig(getConfigPath())
 	if err != nil {
 		log.Fatalf("failed to create config: %v", err)
 	}
@@ -46,20 +56,20 @@ func main() {
 	manager := commands.NewManager(
 		config,
 		func() internal.IService {
-			// fixme: this will be fixed after switching to v2
-			d, _ := driver.New(config.Driver, config.GetDriverOpts())
-			return internal.NewSvc(d)
+			return internal.NewSvc(driver.New(
+				config.Driver, config.GetDriverOpts(),
+			))
 		},
 		pkg.RunCmd,
 	)
 
-	pump.AddCommand(commands.ConfigureV2(manager))
-	pump.AddCommand(commands.CreateTaskV2(manager))
-	pump.AddCommand(commands.GetTaskV2(manager))
-	pump.AddCommand(commands.BrowseTaskV2(manager))
-	pump.AddCommand(commands.CompleteTaskV2(manager))
-	pump.AddCommand(commands.EditTaskV2(manager))
-	pump.AddCommand(commands.SelectTaskV2(manager))
+	pump.AddCommand(commands.Configure(manager))
+	pump.AddCommand(commands.CreateTask(manager))
+	pump.AddCommand(commands.GetTask(manager))
+	pump.AddCommand(commands.BrowseTask(manager))
+	pump.AddCommand(commands.CompleteTask(manager))
+	pump.AddCommand(commands.EditTask(manager))
+	pump.AddCommand(commands.SelectTask(manager))
 
 	_ = pump.Execute()
 }

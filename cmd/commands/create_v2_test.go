@@ -35,7 +35,7 @@ func prepareCommand(cmd *cobra.Command, args []string) *bytes.Buffer {
 	return out
 }
 
-func TestCreateTaskV2(t *testing.T) {
+func TestCreateTask(t *testing.T) {
 	cases := []struct {
 		name       string
 		config     *internal.Config
@@ -128,7 +128,7 @@ func TestCreateTaskV2(t *testing.T) {
 				Config:       tc.config,
 				ServiceMaker: func() internal.IService { return service },
 			}
-			cmd := commands.CreateTaskV2(manager)
+			cmd := commands.CreateTask(manager)
 			out := prepareCommand(cmd, tc.args)
 
 			tc.wantErr(t, cmd.Execute())

@@ -55,11 +55,11 @@ func (f *CompleteFlags) Validate() error {
 	return nil
 }
 
-func CompleteTaskV2(m *Manager) *cobra.Command {
+func CompleteTask(m *Manager) *cobra.Command {
 	var flags = NewCompleteFlags()
 
 	cmd := &cobra.Command{
-		Use:                   "complete_v2 (-t TASK_ID [SUMMARY])",
+		Use:                   "complete (-t TASK_ID [SUMMARY])",
 		DisableFlagsInUseLine: true,
 		SilenceUsage:          true,
 		Short:                 completeShort,

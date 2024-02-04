@@ -78,11 +78,11 @@ func (f *SelectFlags) Validate() error {
 	return nil
 }
 
-func SelectTaskV2(m *Manager) *cobra.Command {
+func SelectTask(m *Manager) *cobra.Command {
 	var flags = NewSelectFlags()
 
 	cmd := &cobra.Command{
-		Use:                   "select_v2 (-t TASK_ID -i INTERVAL)",
+		Use:                   "select (-t TASK_ID -i INTERVAL)",
 		DisableFlagsInUseLine: true,
 		SilenceUsage:          true,
 		Short:                 selectShort,

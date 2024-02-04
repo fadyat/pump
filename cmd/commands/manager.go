@@ -10,8 +10,7 @@ var (
 	availableCommands = map[string][]string{
 		driver.AsanaDriver: {
 			"create", "get", "browse",
-			"select", "edit", "configure",
-			"complete",
+			"select", "edit", "complete",
 		},
 	}
 )

@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	ErrCommandNotAvailable = errors.New("command not available for the current driver")
+	ErrCommandNotAvailable = errors.New("command not available for the current driver; run `pump configure`")
 )
 
 const (
@@ -17,11 +17,11 @@ const (
   pump create "Task name"`
 )
 
-func CreateTaskV2(m *Manager) *cobra.Command {
+func CreateTask(m *Manager) *cobra.Command {
 	var f = flags.NewCreateFlags()
 
 	cmd := &cobra.Command{
-		Use:                   "create_v2 (-n NAME)",
+		Use:                   "create (-n NAME)",
 		DisableFlagsInUseLine: true,
 		SilenceUsage:          true,
 		Short:                 createShort,

@@ -43,11 +43,11 @@ func (f *BrowseFlags) Validate() error {
 	return nil
 }
 
-func BrowseTaskV2(m *Manager) *cobra.Command {
+func BrowseTask(m *Manager) *cobra.Command {
 	var flags = NewBrowseFlags()
 
 	cmd := &cobra.Command{
-		Use:                   "browse_v2 (-t TASK_ID)",
+		Use:                   "browse (-t TASK_ID)",
 		DisableFlagsInUseLine: true,
 		SilenceUsage:          true,
 		Short:                 browseShort,

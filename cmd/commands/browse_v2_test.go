@@ -23,7 +23,7 @@ func (c *command) buildCommand(cmd string, args ...string) error {
 	return c.withError
 }
 
-func TestBrowseTaskV2(t *testing.T) {
+func TestBrowseTask(t *testing.T) {
 	cases := []struct {
 		name    string
 		config  *internal.Config
@@ -88,7 +88,7 @@ func TestBrowseTaskV2(t *testing.T) {
 				Config:     tc.config,
 				RunCommand: tc.runner.buildCommand,
 			}
-			cmd := commands.BrowseTaskV2(manager)
+			cmd := commands.BrowseTask(manager)
 			cmd.SetArgs(tc.args)
 
 			tc.wantErr(t, cmd.Execute())
