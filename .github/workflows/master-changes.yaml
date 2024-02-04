@@ -15,7 +15,7 @@ env:
 
 jobs:
   linter:
-    runs-on: ${{ env.RUNNER_OS }}
+    runs-on: ubuntu-22.04
     steps:
       - name: checkout
         uses: actions/checkout@v3
@@ -30,7 +30,7 @@ jobs:
           args: --config .golangci.yml ./...
 
   run_tests:
-    runs-on: ${{ env.RUNNER_OS }}
+    runs-on: ubuntu-22.04
     steps:
       - name: checkout
         uses: actions/checkout@v3
@@ -41,7 +41,7 @@ jobs:
       - name: tests
         run: go test -v ./...
   build:
-    runs-on: ${{ env.RUNNER_OS }}
+    runs-on: ubuntu-22.04
     needs: run_tests
     steps:
       - name: checkout
