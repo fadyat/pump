@@ -1,0 +1,54 @@
+name: master-changes
+
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+
+env:
+  GO_VERSION: 1.21
+  GOLANGCI_LINT_VERSION: v1.55
+  RUNNER_OS: ubuntu-22.04
+
+jobs:
+  linter:
+    runs-on: ${{ env.RUNNER_OS }}
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+      - name: setup golang
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - name: Running linters
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: ${{ env.GOLANGCI_LINT_VERSION }}
+          args: --config .golangci.yml ./...
+
+  run_tests:
+    runs-on: ${{ env.RUNNER_OS }}
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+      - name: setup golang
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - name: tests
+        run: go test -v ./...
+  build:
+    runs-on: ${{ env.RUNNER_OS }}
+    needs: run_tests
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+      - name: setup golang
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - name: build
+        run: go build -ldflags "-s -w -X main.Version=${{ github.sha }}" -o pump ./cmd/main.go
