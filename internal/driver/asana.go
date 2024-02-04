@@ -1,6 +1,7 @@
 package driver
 
 import (
+	"github.com/fadyat/pump/cmd/flags"
 	"github.com/fadyat/pump/internal/api"
 	"github.com/fadyat/pump/internal/model"
 	"time"
@@ -10,7 +11,7 @@ type Asana struct {
 	c *api.AsanaClient
 }
 
-func (a *Asana) Get() ([]*model.Task, error) {
+func (a *Asana) Get(f *flags.GetFlags) ([]*model.Task, error) {
 	tasksAsana, err := a.c.GetTasks()
 	if err != nil {
 		return nil, err
@@ -18,10 +19,29 @@ func (a *Asana) Get() ([]*model.Task, error) {
 
 	var tasks = make([]*model.Task, 0, len(tasksAsana))
 	for _, taskAsana := range tasksAsana {
-		tasks = append(tasks, model.FromAsanaTask(taskAsana))
+		task := model.FromAsanaTask(taskAsana)
+		if a.byActive(f.OnlyActive, task) && a.byInactive(f.OnlyInactive, task) {
+			tasks = append(tasks, task)
+		}
 	}
 
 	return tasks, nil
+}
+
+func (a *Asana) byInactive(inactive bool, task *model.Task) bool {
+	if inactive {
+		return task.DueAt == nil
+	}
+
+	return true
+}
+
+func (a *Asana) byActive(active bool, task *model.Task) bool {
+	if active {
+		return task.DueAt != nil
+	}
+
+	return true
 }
 
 func (a *Asana) GetByID(taskID string) (*model.Task, error) {
@@ -33,8 +53,8 @@ func (a *Asana) GetByID(taskID string) (*model.Task, error) {
 	return model.FromAsanaTask(taskAsana), nil
 }
 
-func (a *Asana) Create(taskName string) error {
-	return a.c.CreateTask(taskName)
+func (a *Asana) Create(f *flags.CreateFlags) error {
+	return a.c.CreateTask(f.Name, f.Description)
 }
 
 func (a *Asana) MarkAsDone(taskID, summary string) error {

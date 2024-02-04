@@ -51,9 +51,12 @@ func (a *AsanaClient) GetTasks() ([]*asana.Task, error) {
 	return tasks, nil
 }
 
-func (a *AsanaClient) CreateTask(taskName string) error {
+func (a *AsanaClient) CreateTask(taskName, description string) error {
 	var taskCreateRequest = &asana.CreateTaskRequest{
-		TaskBase: asana.TaskBase{Name: taskName},
+		TaskBase: asana.TaskBase{
+			Name:  taskName,
+			Notes: description,
+		},
 		Projects: []string{a.project},
 	}
 

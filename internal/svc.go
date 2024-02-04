@@ -2,6 +2,7 @@ package internal
 
 import (
 	"errors"
+	"github.com/fadyat/pump/cmd/flags"
 	"github.com/fadyat/pump/internal/driver"
 	"github.com/fadyat/pump/internal/model"
 	"github.com/fadyat/pump/pkg"
@@ -12,10 +13,11 @@ var (
 	ErrTaskNotFound = errors.New("task not found")
 )
 
-type Service interface {
-	Get() ([]*model.Task, error)
+//go:generate ../.tools/.bin/mockery --name=IService --output=../mocks --filename=svc.go
+type IService interface {
+	Get(f *flags.GetFlags) ([]*model.Task, error)
 	GetByID(taskID string) (*model.Task, error)
-	Create(taskName string) error
+	Create(f *flags.CreateFlags) error
 	MarkAsDone(taskID, summary string) error
 	SelectGoal(manualTaskID string, dueAt *time.Time) (*model.Task, error)
 	Reopen(taskID, summary string) error
@@ -26,20 +28,20 @@ type svc struct {
 	storage driver.Storage
 }
 
-func NewSvc(storage driver.Storage) Service {
+func NewSvc(storage driver.Storage) IService {
 	return &svc{storage: storage}
 }
 
-func (r *svc) Get() ([]*model.Task, error) {
-	return r.storage.Get()
+func (r *svc) Get(f *flags.GetFlags) ([]*model.Task, error) {
+	return r.storage.Get(f)
 }
 
 func (r *svc) GetByID(taskID string) (*model.Task, error) {
 	return r.storage.GetByID(taskID)
 }
 
-func (r *svc) Create(taskName string) error {
-	return r.storage.Create(taskName)
+func (r *svc) Create(f *flags.CreateFlags) error {
+	return r.storage.Create(f)
 }
 
 func (r *svc) MarkAsDone(taskID, summary string) error {
@@ -78,7 +80,10 @@ func (r *svc) Update(task *model.Task) error {
 }
 
 func (r *svc) selectRndTask() (*model.Task, error) {
-	tasks, err := r.storage.Get()
+	f := flags.NewGetFlags()
+	f.OnlyInactive = true
+
+	tasks, err := r.storage.Get(f)
 	if err != nil {
 		return nil, err
 	}

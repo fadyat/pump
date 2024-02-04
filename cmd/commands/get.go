@@ -1,48 +1,59 @@
 package commands
 
 import (
-	"fmt"
+	"github.com/fadyat/pump/cmd/flags"
 	"github.com/fadyat/pump/internal"
-	"github.com/fadyat/pump/internal/driver"
-	"github.com/fadyat/pump/internal/model"
 	"github.com/spf13/cobra"
 )
 
-func GetAvailableTask(
-	config *internal.Config,
-) *cobra.Command {
-	return &cobra.Command{
-		Use:   "get",
-		Short: "Get all available tasks",
-		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			driv, err := driver.New(config.Driver, config.GetDriverOpts())
+const (
+	getShort = "Get tasks based on some criteria"
+
+	getExample = `  pump get`
+)
+
+func GetTask(m *Manager) *cobra.Command {
+	var f = flags.NewGetFlags()
+
+	cmd := &cobra.Command{
+		Use:                   "get",
+		DisableFlagsInUseLine: true,
+		SilenceUsage:          true,
+		Short:                 getShort,
+		Example:               getExample,
+		Args:                  cobra.NoArgs,
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			if !m.IsCommandAvailable("get") {
+				return ErrCommandNotAvailable
+			}
+
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			printer := internal.NewTablePrinter(
+				cmd.OutOrStdout(),
+				"id", "name", "created at", "due at",
+			)
+
+			tasks, err := m.ServiceMaker().Get(f)
 			if err != nil {
 				return err
 			}
 
-			var (
-				svc     = internal.NewSvc(driv)
-				printer = internal.NewTablePrinter("id", "name", "created at", "due at")
-				tasks   []*model.Task
-			)
-
-			if tasks, err = svc.Get(); err != nil {
-				return err
-			}
-
-			values := make([][]string, len(tasks))
-			for idx, task := range tasks {
-				values[idx] = task.ToPrintable()
-			}
-
+			values := internal.AsPrintable(tasks)
 			if len(values) == 0 {
-				fmt.Println("No tasks found")
+				cmd.Println("No tasks found")
 				return nil
 			}
 
 			printer.Print(values)
 			return nil
 		},
-		SilenceUsage: true,
 	}
+
+	cmd.Flags().BoolVarP(&f.OnlyActive, "active", "a", f.OnlyActive, "Show only active tasks")
+	cmd.Flags().BoolVarP(&f.OnlyInactive, "inactive", "i", f.OnlyInactive, "Show only inactive tasks")
+	cmd.MarkFlagsMutuallyExclusive("active", "inactive")
+
+	return cmd
 }
