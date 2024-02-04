@@ -71,7 +71,7 @@ func (f *SelectFlags) Prepare() {
 func (f *SelectFlags) Validate() error {
 	f.Prepare()
 
-	if slices.Contains(getWorkIntervals(), f.WorkInterval) {
+	if !slices.Contains(getWorkIntervals(), f.WorkInterval) {
 		return ErrInvalidWorkInterval
 	}
 

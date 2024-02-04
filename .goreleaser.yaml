@@ -6,7 +6,6 @@ dist: .bin
 before:
   hooks:
     - go mod tidy
-    - go generate ./...
 
 snapshot:
   name_template: "{{ .Tag }}"
